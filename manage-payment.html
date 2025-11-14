@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เปลี่ยนแปลงช่องทางการชำระเงิน - Cartoon Club</title>
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/manage-payment.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navbar Component -->
+        <div id="navbar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="manage-payment-wrapper">
+
+                <!-- Back Button Section (Frame 74:766) -->
+                <div class="manage-payment-back" id="backButton">
+                    <div class="manage-payment-back-icon">
+                        <img src="icon/Back Arrow-2.png" alt="Back Left" />
+                    </div>
+                    <div class="manage-payment-back-text">บัญชีของฉัน</div>
+                </div>
+
+                <!-- Payment Content Section (Frame 74:779) -->
+                <div class="manage-payment-content">
+                    <div class="manage-payment-form-section">
+
+                        <!-- Header Section (Frame 74:777) -->
+                        <div class="manage-payment-header">
+                            <h1 class="manage-payment-title">เปลี่ยนแปลงช่องทางการชำระเงิน</h1>
+                            <p class="manage-payment-subtitle">จะเปลี่ยนแปลงในรอบบิลถัดไป</p>
+                        </div>
+
+                        <!-- Credit/Debit Card Option (Frame 22:1118) -->
+                        <div class="payment-option-card" data-payment-type="credit">
+                            <div class="payment-option-content">
+                                <div class="payment-option-left">
+                                    <i class="fas fa-credit-card payment-option-icon"></i>
+                                    <span class="payment-option-label">Credit or Debit Card</span>
+                                </div>
+                                <div class="payment-option-arrow">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer Component -->
+        <div id="footer"></div>
+    </div>
+
+    <!-- JavaScript Components -->
+    <!-- Lenis: smooth scroll lib (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+
+    <!-- Manage Payment Page Interactions -->
+    <script type="module">
+        import { auth, db, getUserDoc, updateUserDoc } from './firebase-controller.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
+        import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+        import Modal from './components/Modal.js';
+
+        // Simple tokenization stub to simulate Payment Gateway
+        async function tokenizeCard({ number, exp, cvc, name }) {
+            // In production, this would call your gateway SDK (Stripe, Omise, etc.)
+            await new Promise(r => setTimeout(r, 700));
+            return {
+                paymentMethodId: 'pm_' + Math.random().toString(36).slice(2, 9),
+                last4: String(number).slice(-4)
+            };
+        }
+
+        // Show card form using the shared Modal component for consistent styling
+        function showCardForm(onSubmit, onClose) {
+            const modal = Modal.createFormModal({
+                id: 'add-card-modal-' + Math.random().toString(36).slice(2, 6),
+                title: 'เพิ่มบัตรเครดิต/เดบิต',
+                variant: 'figma',
+                showFooter: true,
+                fields: [
+                    { id: 'card-name', name: 'name', label: 'ชื่อบนบัตร', required: true },
+                    { id: 'card-number', name: 'number', label: 'หมายเลขบัตร', required: true, placeholder: '4111 1111 1111 1111' },
+                    { id: 'card-exp', name: 'exp', label: 'MM/YY', required: true, placeholder: '12/24' },
+                    { id: 'card-cvc', name: 'cvc', label: 'CVC', required: true }
+                ],
+                onSubmit(modalInstance) {
+                    try {
+                        const form = modalInstance.element.querySelector('form');
+                        const card = {
+                            name: form.querySelector('#card-name').value,
+                            number: form.querySelector('#card-number').value.replace(/\s+/g, ''),
+                            exp: form.querySelector('#card-exp').value,
+                            cvc: form.querySelector('#card-cvc').value
+                        };
+                        // call provided onSubmit and close when done
+                        Promise.resolve(onSubmit(card)).then(() => {
+                            modalInstance.close();
+                        }).catch(err => {
+                            console.error(err);
+                            showAlertModal('ไม่สามารถบันทึกบัตรได้');
+                        });
+                    } catch (err) {
+                        console.error(err);
+                    }
+                },
+                onClose() {
+                    if (typeof onClose === 'function') onClose();
+                }
+            });
+
+            modal.render();
+            modal.open();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const backButton = document.getElementById('backButton');
+            if (backButton) backButton.addEventListener('click', () => window.location.href = 'payment.html');
+
+            const paymentCards = document.querySelectorAll('.payment-option-card');
+
+            let currentUser = null;
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                currentUser = user;
+            });
+
+            // Payment option cards handlers (restored)
+            paymentCards.forEach(card => {
+                card.addEventListener('click', async () => {
+                    const paymentType = card.getAttribute('data-payment-type');
+
+                    // Remove selected class from all cards and mark this one
+                    paymentCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+
+                    if (paymentType === 'credit') {
+                        // Load user doc and show unified card modal (edit or add)
+                        const snap = await getUserDoc(currentUser.uid);
+                        const data = snap.exists() ? snap.data() : {};
+                   
+                        const existingAutoRenew = (data.subscription && typeof data.subscription.autoRenew !== 'undefined') ? !!data.subscription.autoRenew : true;
+
+                        // Build a single modal for add/edit card. Card fields are optional when editing (so user
+                        // can just toggle autoRenew) but required when adding a new card.
+                        const prefillName = data.card?.name || '';
+                        const cardPlaceholder = data.card?.number;
+                        // If the stored card contains full number, keep it for checks/masks
+                        const existingCardNumber = data.card?.number || '';
+
+                        const modal = Modal.createFormModal({
+                            id: 'edit-add-card-modal-' + Math.random().toString(36).slice(2, 6),
+                            title: cardPlaceholder ? 'แก้ไขบัตรที่บันทึกไว้' : 'เพิ่มบัตรเครดิต/เดบิต',
+                            content: cardPlaceholder ? `พบบัตรที่บันทึกไว้ กรอกข้อมูลใหม่เพื่อแทนที่หรือเว้นว่างหมายเลขบัตรไว้เพื่อเก็บบัตรเดิม` : '',
+                            variant: 'figma',
+                            showFooter: true,
+                            fields: [
+                                { id: 'card-name', name: 'name', label: 'ชื่อบนบัตร', placeholder: 'ชื่อบนบัตร', value: prefillName },
+                                { id: 'card-number', name: 'number', label: 'หมายเลขบัตร', value: cardPlaceholder, placeholder: '4111 1111 1111 1111' },
+                                { id: 'card-exp', name: 'exp', label: 'MM/YY', placeholder: '12/24' },
+                                { id: 'card-cvc', name: 'cvc', label: 'CVC', placeholder: '' },
+                                { id: 'autoRenew', name: 'autoRenew', label: 'เปิดการต่ออายุอัตโนมัติ', type: 'checkbox', checked: existingAutoRenew }
+                            ],
+                            onSubmit: async function (modalInstance) {
+                                try {
+                                    const form = modalInstance.element.querySelector('form');
+                                    const name = form.querySelector('#card-name') ? form.querySelector('#card-name').value : '';
+                                    const numberRaw = form.querySelector('#card-number') ? form.querySelector('#card-number').value.replace(/\s+/g, '') : '';
+                                    const exp = form.querySelector('#card-exp') ? form.querySelector('#card-exp').value : '';
+                                    const cvc = form.querySelector('#card-cvc') ? form.querySelector('#card-cvc').value : '';
+                                    const autoRenewEl = form.querySelector('#autoRenew');
+                                    const autoRenew = !!(autoRenewEl && (autoRenewEl.type === 'checkbox' ? autoRenewEl.checked : autoRenewEl.value));
+
+                                    // If no existing card and no number provided, require card number
+                                    if (!existingCardNumber && !numberRaw) {
+                                        showAlertModal('กรุณากรอกหมายเลขบัตรเพื่อเพิ่มบัตร');
+                                        return;
+                                    }
+
+                                    // Close modal UI
+                                    modalInstance.close();
+
+                                    // If number empty but existing card present, only update autoRenew
+                                                if (!numberRaw && existingCardNumber) {
+                                
+                                                    await updateUserDoc(currentUser.uid, {
+                                                        'subscription.autoRenew': autoRenew,
+                                                        card: {
+                                                            name: name || (data.card && (data.card.name || data.card.holderName)) || '',
+                                                            number: data.card.number || '',
+                                                            exp: data.card?.exp || '',
+                                                        }
+                                                    });
+                                                    // also update card subdoc timestamp if exists
+                                                    try {
+                                                        await setDoc(doc(db, 'users', currentUser.uid, 'card', 'primary'), {
+                                                            updatedAt: new Date().toISOString()
+                                                        }, { merge: true });
+                                                    } catch (subErr) {
+                                                        console.warn('Could not update card subdoc timestamp:', subErr);
+                                                    }
+                                                    showAlertModal('บันทึกการตั้งค่าการต่ออายุเรียบร้อยแล้ว');
+                                                    window.location.href = 'payment.html';
+                                                    return;
+                                                }
+
+                                    // Otherwise, tokenize and save new card + autoRenew
+                                    try {
+                                        // pass collected card fields into tokenizeCard
+                                        const token = await tokenizeCard({ number: numberRaw, exp, cvc, name });
+                                        // Update subscription fields and save a full `card` object (but store masked number only)
+                                        await updateUserDoc(currentUser.uid, {
+                                            'subscription.paymentMethodId': token.paymentMethodId,
+                                            'subscription.autoRenew': autoRenew,
+                                            card: {
+                                                name: name || '',
+                                                number: numberRaw,
+                                                exp: exp || ''
+                                            }
+                                        });
+                                        // Also save a masked card document in a user subcollection `card`.
+                                        try {
+                                            // Store full card number in subdocument (NOTE: this stores PAN in Firestore)
+                                            // WARNING: Storing full card numbers is not PCI-compliant. Proceed only if you
+                                            // understand the security and compliance implications.
+                                            await setDoc(doc(db, 'users', currentUser.uid, 'card', 'primary'), {
+                                                last4: token.last4,
+                                                holderName: name || '',
+                                                number: numberRaw || '',
+                                                exp: exp || '',
+                                                updatedAt: new Date().toISOString()
+                                            }, { merge: true });
+                                        } catch (subErr) {
+                                            console.warn('Could not write card subdoc:', subErr);
+                                        }
+                                        showAlertModal('บันทึกบัตรเรียบร้อยแล้ว');
+                                        window.location.href = 'payment.html';
+                                    } catch (err) {
+                                        console.error('Tokenize/save failed', err);
+                                        showAlertModal('ไม่สามารถบันทึกบัตรได้ โปรดลองอีกครั้ง');
+                                    }
+                                } catch (err) {
+                                    console.error('Card modal submit failed', err);
+                                }
+                            },
+                            onClose() {
+                                card.classList.remove('selected');
+                            }
+                        });
+
+                        modal.render();
+                        modal.open();
+
+                    } else if (paymentType === 'promptpay') {
+                        const confirmed = confirm('ต้องการบันทึก PromptPay เป็นช่องทางชำระเงินหรือไม่?');
+                        if (!confirmed) { card.classList.remove('selected'); return; }
+                        try {
+                            await updateUserDoc(currentUser.uid, {
+                                'subscription.paymentMethodId': 'promptpay',
+                                'subscription.autoRenew': false
+                            });
+                            showAlertModal('บันทึก PromptPay เรียบร้อยแล้ว');
+                            window.location.href = 'payment.html';
+                        } catch (err) {
+                            console.error(err);
+                            showAlertModal('ไม่สามารถบันทึกได้');
+                            card.classList.remove('selected');
+                        }
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Panel - Trigger</title>
+    <style>
+        body { font-family: sans-serif; display: grid; place-items: center; min-height: 100vh; }
+        .container { text-align: center; border: 1px solid #ccc; padding: 30px; border-radius: 8px; }
+        button { font-size: 1.2rem; padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #0056b3; }
+        #status-message { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>แผงควบคุมทดสอบ</h1>
+        <p>สำหรับจำลองการชำระเงิน (แทน Webhook)</p>
+        
+        <button id="trigger-button">🚀 อนุมัติสถานะ Active (ทดสอบ)</button>
+        
+        <p id="status-message">สถานะ: ...</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions-compat.js"></script>
+
+    <script>
+        // --- ⚠️ ใส่ FIREBASE CONFIG ของคุณที่นี่ ⚠️ ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // เริ่มต้น Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script src="test-panel.js"></script>
+
+</body>
+</html>

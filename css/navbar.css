@@ -1,0 +1,283 @@
+/* Backup of navbar.css created on 2025-11-12 */
+/* Original content preserved for safety */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 1000;
+  /* Make the navbar non-interactive by default; enable interaction for
+     search and specific buttons per request (option B). */
+  pointer-events: none;
+}
+
+.navbar-top {
+  background-color: var(--primary-red);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  padding: 0 20px;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  width: 213px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 71/40;
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Navigation Links */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.navbar-nav a {
+  color: var(--text-white);
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.3s;
+}
+
+.navbar-nav a:hover {
+  opacity: 0.8;
+}
+
+.navbar-nav a.active {
+  font-weight: 600;
+}
+
+.navbar-right,
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Search Bar */
+.navbar-search {
+  width: 600px;
+  height: 45px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  display: flex;
+  padding: 6px 17px;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+}
+
+/* Enable interaction inside the search area and for action buttons */
+.navbar-search,
+.navbar-search *,
+.user-btn,
+.vip-btn,
+.mobile-menu-toggle,
+.navbar-nav a {
+  pointer-events: auto;
+}
+
+/* Cursor affordances for interactive controls */
+.navbar-search input {
+  cursor: text;
+}
+.navbar-search button,
+.user-btn,
+.vip-btn,
+.mobile-menu-toggle {
+  cursor: pointer;
+}
+
+.navbar-search input {
+  width: 100%;
+  height: 100%;
+  padding: 0 15px;
+  font-size: 16px;
+  border: none;
+}
+
+.navbar-search input:focus {
+  outline: none;
+}
+
+.navbar-search button {
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.search-icon :hover {
+  transform: scale(1.05);
+  transition: transform 0.2s all;  
+}
+
+.navbar-search button i {
+  font-size: 22px;
+  color: var(--primary-red);
+}
+
+/* User & VIP Actions */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--text-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.user-btn:hover {
+  transform: scale(1.05);
+}
+
+/* VIP Button */
+.vip-btn {
+  display: flex;
+  padding: 14px 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+  background: #fff;
+  color: #000;
+  text-align: center;
+  font-size: 25px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px; /* 100% */
+  gap: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vip-btn:hover {
+  transform: scale(1.05);
+}
+.star-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-white);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .navbar-search input {
+    width: 400px;
+  }
+}
+
+@media (max-width: 968px) {
+  .navbar-top {
+    padding: 0 24px;
+    gap: 20px;
+  }
+
+  .navbar-nav {
+    display: none;
+  }
+
+  .navbar-search {
+    flex: 1;
+  }
+
+  .navbar-search input {
+    width: 100%;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    height: 140px;
+  }
+
+  .navbar-top {
+    height: 100px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .navbar-logo {
+    width: 150px;
+    height: 80px;
+  }
+
+  .navbar-gradient {
+    height: 40px;
+  }
+
+  .navbar-search {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .navbar-search input {
+    font-size: 14px;
+  }
+
+  .vip-btn {
+    padding: 10px 15px;
+  }
+
+  .vip-btn .vip-text {
+    font-size: 20px;
+  }
+
+  .vip-btn .vip-icon {
+    font-size: 20px;
+  }
+}
+
+/* Spacer for fixed navbar */
+.navbar-spacer {
+  height: 100px;
+}
+
+@media (max-width: 768px) {
+  .navbar-spacer {
+    height: 100px;
+  }
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta charset="UTF-8">
+    <title>Seed Database</title>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        body { font-family: sans-serif; display: grid; place-items: center; min-height: 100vh; background: #222; color: white; }
+        button { font-size: 2rem; padding: 1rem 2rem; cursor: pointer; border-radius: 8px; }
+        pre { background: #333; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>หน้าสำหรับ Seed ข้อมูล Content</h1>
+        <p>โปรดเปิด Console (F12) เพื่อดูสถานะ</p>
+        <button id="seedButton">🚀 เริ่ม Seed ข้อมูล (30 เรื่อง)</button>
+        <pre id="log"></pre>
+    </div>
+
+    <script type="module">
+    // 1. Import ฟังก์ชันที่เราสร้าง (ไฟล์จริงคือ seed-databse.js อยู่ที่รูท)
+    import { seedContentCollection } from './seed-databse.js';
+
+        const btn = document.getElementById('seedButton');
+        const log = document.getElementById('log');
+
+        btn.onclick = async () => {
+            if (confirm("คุณแน่ใจนะ ว่าจะ Seed ข้อมูลลง 'content'? (ทำแค่ครั้งเดียว)")) {
+                btn.disabled = true;
+                btn.textContent = 'กำลังทำงาน...';
+                
+                // 2. เรียกใช้งาน
+                const result = await seedContentCollection();
+                
+                log.textContent = result;
+                btn.textContent = '✅ เสร็จสิ้น';
+            }
+        };
+    </script>
+</body>
+</html>

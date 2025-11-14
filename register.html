@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลงทะเบียน | Cartoon Club</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/register.css">
+  </style>
+</head>
+<body>
+  <!-- Navbar Component -->
+  <div id="navbar"></div>
+  <div class="center">
+    <div class="register-box">
+      <img src="img/Logo Cartoon Club.png" alt="Logo" class="logo" />
+      <div class="register-title">ลงทะเบียน</div>
+      <form>
+        <div style="color:#fff; font-size:16px; margin-bottom:8px;">ป้อนชื่อของคุณ</div>
+        <div class="input-group">
+          <input type="text" class="input-field" id="regFirstName" placeholder="ชื่อ" required>
+        </div>
+        <div class="input-group">
+          <input type="text" class="input-field" id="regLastName" placeholder="นามสกุล" required>
+        </div>
+        <div style="color:#fff; font-size:16px; margin-bottom:8px; margin-top:16px;">ป้อนอีเมล์ของคุณ</div>
+        <div class="input-group">
+          <input type="email" class="input-field" id="regEmail" placeholder="อีเมล" required>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input-field" id="regPassword" placeholder="รหัสผ่าน" required>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input-field" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน" required>
+        </div>
+        <div class="accept-group">
+          <input type="checkbox" id="acceptTerms" style="width:24px; height:24px; margin-right:8px;" required>
+          <span class="accept-text">
+            ฉันยอมรับ <a href="https://www.viu.com/ott/link/copyright-statement/terms-and-conditions?user_level=1&languageFlagId=4">ข้อตกลงและเงื่อนไข</a> ข้อกำหนด <a href="https://www.viu.com/ott/link/copyright-statement/privacy?languageFlagId=4">การเก็บรวมรวมข้อมูลส่วนตัว (PICS)</a> และ <a href="https://www.pccw.com/privacy-statement/index.page?locale=en">ข้อมูลความเป็นส่วนตัว</a> ของ Cartoon Club
+          </span>
+        </div>
+        <div class="promo-group">
+          <input type="checkbox" id="promoOptOut" style="width:24px; height:24px; margin-right:8px;">
+          <span class="promo-text">
+            ฉันไม่ต้องการรับข่าวสารโปรโมชันใดๆ ตามที่กำหนดไว้ใน <a href="https://www.viu.com/ott/link/copyright-statement/privacy?languageFlagId=4">PICS</a>
+          </span>
+        </div>
+        <div style="display:flex; justify-content:center;">
+          <button type="submit" class="register-btn" id="registerBtn">ยืนยันการลงทะเบียน</button>
+        </div>
+      </form>
+      <div class="recaptcha">หน้านี้ได้รับการป้องกันโดย Google reCAPTCHA เพื่อตรวจสอบว่าคุณไม่ใช่บอต<br><a href="#" class="recaptcha-link">ดูข้อมูลเพิ่มเติม</a></div>
+    </div>
+  </div>
+  <!-- Footer Component -->
+  <div id="footer"></div>
+
+  <!-- Lenis: smooth scroll lib (jsDelivr) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+  <script type="module" src="js/navbar.js"></script>
+  <script src="js/footer.js"></script>
+
+  <script type="module">
+    import { register } from './firebase-controller.js';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('form');
+      const acceptTerms = document.getElementById('acceptTerms');
+      const registerBtn = document.getElementById('registerBtn');
+      // ปิดปุ่มถ้ายังไม่ติ้ก
+      registerBtn.disabled = !acceptTerms.checked;
+      acceptTerms.addEventListener('change', () => {
+        registerBtn.disabled = !acceptTerms.checked;
+      });
+      if (form) {
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          // 1. ดึงค่า 'ชื่อ' และ 'นามสกุล' มาด้วย
+          const firstName = document.getElementById('regFirstName').value;
+          const lastName = document.getElementById('regLastName').value;
+          const email = document.getElementById('regEmail').value;
+          const password = document.getElementById('regPassword').value;
+          const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+          // --- ตรวจสอบ Input ---
+          if (!acceptTerms.checked) {
+            showPopup('กรุณายอมรับข้อตกลงและเงื่อนไขก่อนลงทะเบียน');
+            return;
+          }
+          if (password !== passwordConfirm) {
+            showPopup('รหัสผ่านไม่ตรงกัน');
+            return;
+          }
+          if (!firstName || !lastName) {
+            showPopup('กรุณากรอกชื่อและนามสกุล');
+            return;
+          }
+          // --- ทำการสมัคร ---
+          try {
+            await register(email, password, firstName, lastName);
+            showPopup('<span style="display:block;font-weight:700">สมัครสมาชิกสำเร็จ!</span><span style="display:block;margin-top:8px;font-size:20px;font-weight:500">กรุณาตรวจสอบอีเมลเพื่อยืนยันตัวตนของคุณก่อนเข้าใช้งาน</span>', () => {
+              window.location.href = 'login.html';
+            });
+          } catch (err) {
+            console.error(err);
+            showPopup('สมัครสมาชิกไม่สำเร็จ: ' + err.message);
+          }
+        });
+      }
+    });
+    
+    // ฟังก์ชัน showPopup (modal-style)
+    function showPopup(message, callback) {
+      // Remove existing popup if any
+      const existing = document.getElementById('loginPopup');
+      if (existing) existing.remove();
+
+      // Create modal structure using the project's modal classes so it picks up modal styling
+      const wrapper = document.createElement('div');
+      wrapper.id = 'loginPopup';
+      wrapper.className = 'modal show';
+      wrapper.innerHTML = `
+        <div class="modal-content modal-figma" role="dialog" aria-modal="true">
+          <div class="modal-figma-inner">
+            <div class="modal-figma-text">
+              <h1 class="modal-figma-title">${message}</h1>
+            </div>
+          </div>
+          <div class="modal-footer modal-footer-figma">
+            <button type="button" class="btn-figma-primary" id="loginPopupOk">ตกลง</button>
+          </div>
+        </div>
+      `;
+
+      // Append and focus
+      document.body.appendChild(wrapper);
+
+      // Prevent page scroll while modal is open
+      document.body.style.overflow = 'hidden';
+
+      // Close handler
+      function closePopup(doCallback = false) {
+        const el = document.getElementById('loginPopup');
+        if (el) el.remove();
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', onKeyDown);
+        if (doCallback && typeof callback === 'function') callback();
+      }
+
+      // Click outside to close
+      wrapper.addEventListener('click', (e) => {
+        if (e.target === wrapper) closePopup(false);
+      });
+
+      // ESC to close
+      function onKeyDown(e) {
+        if (e.key === 'Escape') closePopup(false);
+      }
+      document.addEventListener('keydown', onKeyDown);
+
+      // OK button
+      const okBtn = document.getElementById('loginPopupOk');
+      if (okBtn) {
+        okBtn.addEventListener('click', () => closePopup(true));
+      }
+    }
+  </script>
+</body>
+</html>

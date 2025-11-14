@@ -1,0 +1,268 @@
+/* ========================================
+   Profile Page Styles
+   Based on Figma Layer Structure
+   ======================================== */
+
+/* Main Layout */
+.profile-wrapper {
+    display: flex;
+    gap: var(--spacing-4xl);
+    padding: 120px 130px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   Sidebar Menu (Frame 74:723)
+   ======================================== */
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    width: 195px;
+    flex-shrink: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+.menu-item.back {
+    gap: 18px;
+}
+
+.menu-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-icon.large {
+    width: 42px;
+    height: 42px;
+    font-size: 28px;
+}
+
+.menu-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.menu-text {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--color-secondary);
+    white-space: nowrap;
+}
+
+.menu-text.large {
+    font-size: var(--font-size-2xl);
+}
+
+.menu-text.active {
+    color: var(--color-secondary);
+}
+
+
+
+/* ========================================
+   Profile Content (Frame 74:759)
+   ======================================== */
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 792px;
+    flex: 1;
+}
+
+.profile-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+}
+
+.profile-subtitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-secondary);
+}
+
+/* ========================================
+   Membership Card (Frame 22:585)
+   ======================================== */
+
+.membership-card {
+    position: relative;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 40px 18px;
+    width: 100%;
+}
+
+.membership-badge {
+    position: absolute;
+    top: 27px;
+    left: 0;
+    background-color: var(--color-primary-dark);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 8px 55px 8px 18px;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    white-space: nowrap;
+}
+
+.membership-info {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.membership-type {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+}
+
+.membership-next-payment {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
+    color: var(--color-secondary);
+}
+
+.membership-payment-method {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.payment-icon {
+    font-size: 24px;
+    color: var(--color-secondary);
+}
+
+.payment-number {
+    font-size: var(--font-size-sm);
+    color: var(--color-secondary);
+}
+
+.membership-divider {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 20px 0;
+}
+
+.membership-manage {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+
+.membership-manage-text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+}
+
+.membership-arrow {
+    font-size: 20px;
+    color: var(--color-secondary);
+    transform: rotate(180deg);
+}
+
+/* ========================================
+   Additional Options Card (Frame 22:1023)
+   ======================================== */
+
+.options-card {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 18px 18px;
+    width: 100%;
+    margin-bottom: 4em;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+
+.option-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.option-text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+}
+
+.option-arrow {
+    font-size: 20px;
+    color: var(--color-secondary);
+    transform: rotate(180deg);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .profile-wrapper {
+        padding: 0 50px;
+        gap: 50px;
+    }
+
+    .profile-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-wrapper {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+    }
+
+    .profile-content {
+        width: 100%;
+    }
+
+    .membership-badge {
+        font-size: var(--font-size-sm);
+        padding: 6px 30px 6px 12px;
+    }
+}

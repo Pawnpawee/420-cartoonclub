@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บัญชีของฉัน - Cartoon Club</title>
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navbar Component -->
+        <div id="navbar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="profile-wrapper">
+
+                <!-- Sidebar Menu (rendered by components/Sidebar.js) -->
+                <aside class="profile-sidebar" data-active="overview"></aside>
+
+                <!-- Profile Content (Frame 74:759) -->
+                <section class="profile-content">
+                    <!-- Page Title -->
+                    <h1 class="profile-title">บัญชีของฉัน</h1>
+
+                    <!-- Membership Details Section -->
+                    <h2 class="profile-subtitle">รายละเอียดการสมัครสมาชิก</h2>
+
+                    <!-- Membership Card (Frame 22:585) -->
+                    <div class="membership-card">
+                        <!-- Membership Badge -->
+                        <div class="membership-badge">
+                            เป็นสมาชิกตั้งแต่ สิงหาคม 2025
+                        </div>
+
+                        <!-- Membership Info -->
+                        <div class="membership-info">
+                            <div class="membership-type">
+                                สมาชิกรายเดือน
+                            </div>
+                            <div class="membership-next-payment">
+                                รอบการชำระเงินถัดไป: 4 กันยายน 2025
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="membership-payment-method">
+                                <i class="fas fa-credit-card payment-icon"></i>
+                                <span class="payment-number"></span>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="membership-divider"></div>
+                    </div>
+
+                    <!-- Additional Options Section -->
+                    <h2 class="profile-subtitle">เพิ่มเติม</h2>
+
+                    <!-- Options Card (Frame 22:1023) -->
+                    <div class="options-card">
+                        <!-- Change Package Option -->
+                        <div class="option-item" data-target="packages.html">
+                            <span class="option-text">เปลี่ยนแปลงแพ็คเกจ</span>
+                            <img src="icon/Back Arrow.png" alt="Back Right" />
+                        </div>
+
+                        <!-- Manage Payment Method Option -->
+                        <div class="option-item" data-target="payment.html">
+                            <span class="option-text">จัดการช่องทางการชำระเงิน</span>
+                            <img src="icon/Back Arrow.png" alt="Back Right" />
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer Component -->
+        <div id="footer"></div>
+    </div>
+
+    <!-- JavaScript Components -->
+    <!-- Lenis: smooth scroll lib (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+
+        <!-- Sidebar handles logout and navigation; populate profile data from Firestore -->
+        <script type="module">
+            import { auth, getUserDoc } from './firebase-controller.js';
+
+            function fmtDate(iso) {
+                if (!iso) return '-';
+                try {
+                    const d = new Date(iso);
+                    return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+                } catch (e) { return iso; }
+            }
+
+            auth.onAuthStateChanged(async (user) => {
+                if (!user) return; // not signed in
+                try {
+                    const docSnap = await getUserDoc(user.uid);
+                    if (!docSnap || !docSnap.exists()) return;
+                    const data = docSnap.data();
+
+                    // Membership badge (start date)
+                    const start = data.subscription?.startDate || data.createdAt;
+            
+                    const badgeEl = document.querySelector('.membership-badge');
+                    if (badgeEl) badgeEl.textContent = 'เป็นสมาชิกตั้งแต่ ' + (start ? new Date(start).toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }) : '-');
+
+                    // Package type
+                    const pkg = data.subscription?.packageId || 'free';
+                    const pkgMap = { free: 'ฟรี', monthly: 'สมาชิกรายเดือน', month: 'สมาชิกรายเดือน', yearly: 'สมาชิกรายปี', year: 'สมาชิกรายปี' };
+                    const typeEl = document.querySelector('.membership-type');
+                    if (typeEl) typeEl.textContent = pkgMap[pkg] || pkg;
+
+                    // Next payment / endDate
+                    const end = data.subscription?.endDate;
+                    const nextEl = document.querySelector('.membership-next-payment');
+                    if (nextEl) nextEl.textContent = end ? ('รอบการชำระเงินถัดไป: ' + fmtDate(end)) : 'รอบการชำระเงินถัดไป: -';
+
+                    // Payment method masked
+                    const number = data.card?.number || null;
+                    const payEl = document.querySelector('.payment-number');
+                    if (payEl) {
+                        if (number) {
+                            payEl.textContent = number;
+                        } else {
+                            payEl.textContent = '---';
+                        }
+                    }
+
+                } catch (err) {
+                    console.error('Profile load error', err);
+                }
+            });
+
+            // Options-card navigation handlers — attach immediately (script runs at end of body)
+            document.querySelectorAll('.options-card .option-item').forEach(item => {
+                const target = item.dataset.target;
+                if (!target) return;
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', () => {
+                    // If you want to ensure user is authenticated before navigating, check auth.currentUser here
+                    window.location.href = target;
+                });
+            });
+        </script>
+</body>
+</html>

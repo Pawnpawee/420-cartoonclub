@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Run Seed — Cartoon Club</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial; padding: 24px; }
+    label { display:block; margin:8px 0 4px; }
+    input[type=number] { width:120px; }
+    button { margin-top:12px; padding:8px 12px; }
+    pre { background:#f6f8fa; padding:12px; border-radius:6px; max-height:40vh; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h1>Seed Episodes Runner</h1>
+  <p>สคริปต์นี้จะเรียกฟังก์ชัน <code>seedEpisodesCollection</code> จากไฟล์ <code>seed-episodes.js</code> และแสดงผลลัพธ์/สถานะในหน้านี้ (และใน Console)</p>
+
+  <div>
+    <label for="minEpisodes">Min episodes</label>
+    <input id="minEpisodes" type="number" value="8" min="1" />
+
+    <label for="maxEpisodes">Max episodes</label>
+    <input id="maxEpisodes" type="number" value="30" min="1" />
+
+    <label for="maxBatchSize">Max batch size</label>
+    <input id="maxBatchSize" type="number" value="450" min="50" />
+
+    <div>
+      <button id="runBtn">Run seedEpisodesCollection()</button>
+      <button id="clearBtn">Clear log</button>
+    </div>
+  </div>
+
+  <h3>Log</h3>
+  <pre id="log" aria-live="polite"></pre>
+
+  <script type="module">
+    const logEl = document.getElementById('log');
+    function append(msg) {
+      const time = new Date().toISOString();
+      logEl.textContent += `[${time}] ${msg}\n`;
+      console.log(msg);
+    }
+
+    document.getElementById('clearBtn').addEventListener('click', () => { logEl.textContent = ''; });
+
+    let running = false;
+    document.getElementById('runBtn').addEventListener('click', async () => {
+      if (running) return;
+      running = true;
+      const runBtn = document.getElementById('runBtn');
+      runBtn.disabled = true;
+
+      const minEpisodes = Number(document.getElementById('minEpisodes').value) || 8;
+      const maxEpisodes = Number(document.getElementById('maxEpisodes').value) || 30;
+      const maxBatchSize = Number(document.getElementById('maxBatchSize').value) || 450;
+
+      append('Importing seed-episodes.js...');
+      try {
+        const mod = await import('./seed-episodes.js');
+        if (!mod || typeof mod.seedEpisodesCollection !== 'function') {
+          append('ERROR: seedEpisodesCollection not found in seed-episodes.js');
+          running = false;
+          runBtn.disabled = false;
+          return;
+        }
+
+        append(`Calling seedEpisodesCollection({ minEpisodes: ${minEpisodes}, maxEpisodes: ${maxEpisodes}, maxBatchSize: ${maxBatchSize} })`);
+        const result = await mod.seedEpisodesCollection({ minEpisodes, maxEpisodes, maxBatchSize });
+        append('Result: ' + String(result));
+      } catch (err) {
+        append('ERROR: ' + (err && err.message ? err.message : String(err)));
+        console.error(err);
+      } finally {
+        running = false;
+        runBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* ========================================
+   Payment Page Styles
+   Based on Figma Layer Structure (node-id: 22:786)
+   ======================================== */
+
+/* Main Layout */
+.payment-wrapper {
+    display: flex;
+    gap: var(--spacing-xl);
+    padding: 120px 130px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    flex-direction: column;
+}
+
+/* ========================================
+   Back Button Section (Frame 74:760)
+   ======================================== */
+
+.payment-back {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+.payment-back-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.payment-back-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.payment-back-text {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+    white-space: nowrap;
+}
+
+/* ========================================
+   Payment Content Section (Frame 74:775)
+   ======================================== */
+
+.payment-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 792px;
+    max-width: 100%;
+    margin-left: auto;
+    gap: 75px;
+    flex: 1;
+}
+
+.payment-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 75px;
+    align-items: center;
+    width: 100%;
+}
+
+/* ========================================
+   Header Section (Frame 74:773)
+   ======================================== */
+
+.payment-header {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    width: 471px;
+    text-align: center;
+}
+
+.payment-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+    width: 100%;
+}
+
+.payment-subtitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-secondary);
+    width: 100%;
+}
+
+/* ========================================
+   Visa Card Component (Frame 22:1031)
+   ======================================== */
+
+.visa-card {
+    position: relative;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    height: 90px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+}
+
+.visa-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.visa-card-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.visa-card-icon {
+    font-size: 24px;
+    color: var(--color-secondary);
+}
+
+.visa-card-number {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
+    color: var(--color-secondary);
+}
+
+.visa-card-update-btn {
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    padding: 8px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.visa-card-update-btn:hover {
+    opacity: 0.9;
+}
+
+/* ========================================
+   Submit Button (Frame 74:761)
+   ======================================== */
+
+.payment-submit-btn {
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    padding: 12px 27px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s, opacity 0.3s;
+    min-width: 140px;
+    height: 51.45px;
+}
+
+.payment-submit-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.payment-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .payment-wrapper {
+        padding: 0 50px;
+        gap: 50px;
+    }
+
+    .payment-content {
+        width: 100%;
+    }
+
+    .payment-header {
+        width: 100%;
+        max-width: 471px;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-wrapper {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .payment-content {
+        padding: 50px 0;
+        gap: 50px;
+    }
+
+    .payment-header {
+        width: 100%;
+    }
+
+    .payment-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .payment-subtitle {
+        font-size: var(--font-size-md);
+    }
+}

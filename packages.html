@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+<script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แพ็คเกจของฉัน - Cartoon Club</title>
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/packages.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navbar Component -->
+        <div id="navbar"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="packages-wrapper">
+
+                <!-- Sidebar Menu (rendered by components/Sidebar.js) -->
+                <aside class="packages-sidebar" data-active="package"></aside>
+
+                <!-- Packages Content (Frame 76:675) -->
+                <section class="packages-content">
+
+                    <!-- Header Section (Frame 76:674) -->
+                    <div class="packages-header">
+                        <h1 class="packages-title">แพ็คเกจของฉัน</h1>
+                        <p class="packages-subtitle">รายละเอียดของแพ็คเกจ</p>
+                    </div>
+
+                    <!-- Package Cards Grid (dynamic from Firestore) -->
+                                    <div id="packagesGrid" class="packages-grid">
+                                                <!-- Packages will be rendered here from the 'packages' collection -->
+                                            </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer Component -->
+        <div id="footer"></div>
+    </div>
+
+    <!-- JavaScript Components -->
+    <!-- Lenis: smooth scroll lib (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+    <!-- Packages Page Interactions -->
+    <script type="module">
+        import { auth, db, getUserDoc } from './firebase-controller.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
+    import { doc, updateDoc, getDocs, collection, addDoc } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+    import Modal from './components/Modal.js';
+
+        // helpers to compute endDate
+        function addMonths(date, months) {
+            const d = new Date(date);
+            d.setMonth(d.getMonth() + months);
+            return d.toISOString();
+        }
+
+        function addYears(date, years) {
+            const d = new Date(date);
+            d.setFullYear(d.getFullYear() + years);
+            return d.toISOString();
+        }
+
+        // Local state for current user (document data)
+        let currentUserData = null;
+
+        // Generic showPopup wrapper that returns a Promise<boolean>
+        // Uses Modal component with figma variant and OK/Cancel footer
+            function showPopup(title, htmlContent) {
+                return new Promise((resolve) => {
+                    const id = 'showPopup-' + Math.random().toString(36).slice(2, 9);
+                    const modal = new Modal({
+                        id,
+                        variant: 'figma',
+                        title: title,
+                        content: htmlContent,
+                        // Use a settled guard to avoid double-resolving because modal.close()
+                        // synchronously invokes onClose which would otherwise call resolve(false)
+                        // before we resolve(true) in onSubmit.
+                        onSubmit() {
+                            if (modal._settled) return;
+                            modal._settled = true;
+                            resolve(true);
+                            // close after resolving to avoid the onClose resolve overriding us
+                            modal.close();
+                        },
+                        onClose() {
+                            if (modal._settled) return;
+                            modal._settled = true;
+                            // ensure we resolve false if closed without submit
+                            resolve(false);
+                        }
+                    });
+                    modal.render();
+                    modal.open();
+                });
+            }
+
+        // Load user document when auth state changes
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                currentUserData = null;
+                // ensure UI reflects logged-out state
+                applyUserState();
+                return;
+            }
+                try {
+                const snap = await getUserDoc(user.uid);
+                currentUserData = snap.exists() ? snap.data() : null;
+                applyUserState();
+            } catch (err) {
+                console.error('Failed to load user data', err);
+            }
+        });
+
+        // Render packages fetched from Firestore
+        async function loadPackages() {
+            try {
+                const snaps = await getDocs(collection(db, 'packages'));
+                const grid = document.getElementById('packagesGrid');
+                                const html = snaps.docs.map(d => {
+                                                        const p = d.data();
+                                                        const priceText = p.price && p.billingCycle === 'year' ? `${p.price} บาท<br>ต่อปี` : `${p.price} บาท / เดือน`;
+                                                        const featuresHtml = (p.features || []).map(f => `<p class="feature-description">${f}</p>`).join('');
+                                                        return `
+                                                            <div class="package-column" data-package="${d.id}" data-billing="${p.billingCycle}" data-price="${p.price || 0}">
+                                                                <div class="package-card" data-package="${d.id}">
+                                                                    <div class="package-header">
+                                                                        <h2 class="package-name">${p.name}</h2>
+                                                                    </div>
+                                                                    <div class="package-price">
+                                                                        <div class="package-price-text">${priceText}</div>
+                                                                    </div>
+                                                                    <div class="package-details">
+                                                                        <div class="package-features">
+                                                                            ${featuresHtml}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="package-action">
+                                                                    <button class="btn-upgrade" data-package="${d.id}">สมัคร</button>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                }).join('');
+
+                grid.innerHTML = html;
+
+                // Attach handlers after render
+                attachPackageHandlers();
+                // Apply user state if we have user data
+                if (currentUserData) applyUserState();
+            } catch (err) {
+                console.error('Failed to load packages', err);
+            }
+        }
+
+            function attachPackageHandlers() {
+                // Only the upgrade button triggers the purchase flow now.
+                document.querySelectorAll('.btn-upgrade').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const pkgId = btn.dataset.package; // stored package id (doc id)
+                        const column = btn.closest('.package-column');
+                        const card = column.querySelector('.package-card');
+                        const packageName = card.querySelector('.package-name').textContent.trim();
+                        const price = card.querySelector('.package-price-text').textContent.trim();
+
+                        const user = auth.currentUser;
+                        if (!user) {
+                            showAlertModal('กรุณาเข้าสู่ระบบก่อนดำเนินการ');
+                            window.location.href = 'login.html';
+                            return;
+                        }
+
+                        // Ensure we have the latest user document
+                        if (!currentUserData) {
+                            try {
+                                const snap = await getUserDoc(user.uid);
+                                currentUserData = snap.exists() ? snap.data() : null;
+                            } catch (err) {
+                                console.error('Failed to load user data', err);
+                            }
+                        }
+
+                        const ok = await showPopup(`ยืนยันการชำระเงิน: ${packageName}`, `<p style="margin:0 0 8px">ราคา: ${price}</p><p style=\"margin:0;\">ระบบจะเรียกเก็บจากวิธีการชำระเงินที่บันทึกไว้ของคุณ. ต้องการยืนยันหรือไม่?</p>`);
+                        if (!ok) return;
+
+                        // detect free package by dataset price
+                        const priceValue = parseFloat(column.dataset.price || '0');
+                        if (priceValue === 0) {
+                            // Free package: downgrade to inactive and set billing to 1 month after last upgrade
+                            try {
+                                const uid = user.uid;
+                                const now = new Date().toISOString();
+                                // last upgrade date fallback to now
+                                const lastUpgrade = currentUserData?.subscription?.startDate || now;
+                                const endDate = addMonths(lastUpgrade, 1);
+                                const updates = {
+                                    'subscription.packageId': pkgId,
+                                    'subscription.status': 'inactive',
+                                    'subscription.paymentStatus': 'free',
+                                    'subscription.billingCycle': 'month',
+                                    'subscription.startDate': lastUpgrade,
+                                    'subscription.endDate': endDate
+                                };
+
+                                await updateDoc(doc(db, 'users', uid), updates);
+
+                                // update local userData and UI
+                                currentUserData = currentUserData || {};
+                                currentUserData.subscription = currentUserData.subscription || {};
+                                currentUserData.subscription.packageId = pkgId;
+                                currentUserData.subscription.status = 'inactive';
+                                currentUserData.subscription.billingCycle = 'month';
+                                currentUserData.subscription.startDate = updates['subscription.startDate'];
+                                currentUserData.subscription.endDate = updates['subscription.endDate'];
+
+                                applyUserState();
+
+                                const okModal = new Modal({
+                                    id: `ok-free-${pkgId}`,
+                                    variant: 'figma',
+                                    title: 'เปลี่ยนเป็นแพ็คเกจฟรี',
+                                    content: `<p style="margin:0">ระบบได้เปลี่ยนเป็นแพ็คเกจฟรีเรียบร้อยแล้ว</p>`,
+                                    showFooter: false
+                                });
+                                okModal.render();
+                                okModal.open();
+                                setTimeout(() => okModal.close(), 2000);
+                            } catch (err) {
+                                console.error('Free downgrade failed', err);
+                                const errModal = new Modal({
+                                    id: `err-free-${pkgId}`,
+                                    variant: 'figma',
+                                    title: 'เกิดข้อผิดพลาด',
+                                    content: `<p style="margin:0">ไม่สามารถเปลี่ยนเป็นแพ็คเกจฟรีได้ กรุณาลองอีกครั้งภายหลัง</p>`
+                                });
+                                errModal.render();
+                                errModal.open();
+                            }
+
+                            return;
+                        }
+
+                        // After confirmation, ensure the user has a saved payment method.
+                        const hasSavedPayment = Boolean(
+                            currentUserData?.subscription?.paymentMethodId ||
+                            currentUserData?.paymentMethodId ||
+                            (Array.isArray(currentUserData?.paymentMethods) && currentUserData.paymentMethods.length > 0)
+                        );
+                        
+                        console.log('hasSavedPayment', hasSavedPayment);
+                        
+                        if (!hasSavedPayment) {
+                            // If we couldn't load the user doc (currentUserData === null), treat as "no card" and prompt the user.
+                            const goToPayment = await showPopup('ยังไม่มีข้อมูลบัตร', `<p style="margin:0 0 8px">คุณยังไม่มีวิธีการชำระเงินที่บันทึกไว้</p><p style="margin:0">ต้องการไปยังหน้าชำระเงินเพื่อเพิ่มข้อมูลหรือไม่?</p>`);
+                            if (goToPayment) {
+                                window.location.href = 'payment.html';
+                            }
+                            return;
+                        }
+
+                        // Proceed with the subscription update (user has saved payment method)
+                        try {
+                            const uid = user.uid;
+                            const now = new Date().toISOString();
+                            const billing = column.dataset.billing;
+                            const updates = {
+                                'subscription.packageId': pkgId,
+                                'subscription.status': 'active',
+                                'subscription.paymentStatus': 'paid',
+                                'subscription.startDate': now
+                            };
+                            if (billing === 'month') updates['subscription.endDate'] = addMonths(now, 1);
+                            if (billing === 'year') updates['subscription.endDate'] = addYears(now, 1);
+
+                            await updateDoc(doc(db, 'users', uid), updates);
+
+                            // create a payments record for bookkeeping
+                            try {
+                                await addDoc(collection(db, 'users', uid, 'payments'), {
+                                    packageId: pkgId,
+                                    packageName: packageName,
+                                    amount: price,
+                                    method: currentUserData.subscription?.paymentMethodId || currentUserData.paymentMethodId || 'saved-method',
+                                    status: 'succeeded',
+                                    date: now
+                                });
+                            } catch (e) {
+                                console.warn('Failed to write payment record', e);
+                            }
+
+                            // update local userData and UI
+                            currentUserData = currentUserData || {};
+                            currentUserData.subscription = currentUserData.subscription || {};
+                            currentUserData.subscription.packageId = pkgId;
+                            currentUserData.subscription.status = 'active';
+
+                            applyUserState();
+
+                            // success modal
+                            const okModal = new Modal({
+                                id: `ok-${pkgId}`,
+                                variant: 'figma',
+                                title: 'ชำระเงินเรียบร้อย',
+                                content: `<p style="margin:0">ชำระเงินสำเร็จและอัปเกรดแพ็คเกจเรียบร้อยแล้ว</p>`,
+                                showFooter: false
+                            });
+                            okModal.render();
+                            okModal.open();
+                            setTimeout(() => {
+                                okModal.close();
+                                // After closing the success modal, refresh the user document
+                                // so `currentUserData` reflects the server state and UI updates.
+                                (async () => {
+                                    try {
+                                        const snapRefreshed = await getUserDoc(uid);
+                                        if (snapRefreshed && snapRefreshed.exists && snapRefreshed.exists()) {
+                                            currentUserData = snapRefreshed.data();
+                                        }
+                                        applyUserState();
+                                    } catch (e) {
+                                        console.warn('Failed to refresh user after upgrade', e);
+                                    }
+                                })();
+                            }, 2000);
+                        } catch (err) {
+                            console.error('Upgrade failed', err);
+                            const errModal = new Modal({
+                                id: `err-${pkgId}`,
+                                variant: 'figma',
+                                title: 'เกิดข้อผิดพลาด',
+                                content: `<p style=\"margin:0\">ไม่สามารถอัปเดตแพ็คเกจได้ กรุณาลองอีกครั้งภายหลัง</p>`
+                            });
+                            errModal.render();
+                            errModal.open();
+                        }
+                    });
+                });
+            }
+
+        // Apply user state to cards: disable upgrade for current package and show badge
+        function applyUserState() {
+            // If packages not yet rendered, nothing to do
+            if (!document.getElementById('packagesGrid')) return;
+            if (!currentUserData) {
+                // ensure buttons show default state
+                document.querySelectorAll('.package-column').forEach(column => {
+                    const card = column.querySelector('.package-card');
+                    const btn = column.querySelector('.btn-upgrade');
+                    if (btn) {
+                        btn.textContent = 'สมัคร';
+                        btn.disabled = false;
+                        btn.style.opacity = '';
+                        btn.style.cursor = '';
+                    }
+                    if (card) card.classList.remove('current-package');
+                    const header = card && card.querySelector('.package-header');
+                    const existing = header && header.querySelector('.pkg-current-badge');
+                    if (existing) existing.remove();
+                });
+                return;
+            }
+
+            const pkgId = currentUserData.subscription?.packageId || 'free';
+            document.querySelectorAll('.package-column').forEach(column => {
+                const card = column.querySelector('.package-card');
+                const cardPkg = column.dataset.package || (card && card.dataset.package);
+                const header = card && card.querySelector('.package-header');
+                let btn = column.querySelector('.btn-upgrade');
+                // remove any existing badge
+                const existing = header && header.querySelector('.pkg-current-badge');
+                if (existing) existing.remove();
+
+                if (cardPkg === pkgId) {
+                    if (card) card.classList.add('current-package');
+                    if (btn) {
+                        btn.textContent = 'แพ็คเกจปัจจุบัน';
+                        btn.disabled = true;
+                        btn.style.opacity = '0.8';
+                        btn.style.cursor = 'default';
+                    }
+                    const badge = document.createElement('div');
+               
+            
+                    if (header) header.appendChild(badge);
+                } else {
+                    if (card) card.classList.remove('current-package');
+                    if (btn) {
+                        btn.textContent = 'สมัคร';
+                        btn.disabled = false;
+                        btn.style.opacity = '';
+                        btn.style.cursor = '';
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // navigation handlers
+            const backButton = document.querySelector('.menu-item.back');
+            if (backButton) backButton.addEventListener('click', () => window.location.href = 'index.html');
+            const overviewButton = document.querySelector('.menu-item.overview');
+            if (overviewButton) overviewButton.addEventListener('click', () => window.location.href = 'profile.html');
+            document.querySelectorAll('.menu-item:not(.back):not(.overview)').forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    const pages = ['packages.html', 'edit-profile.html'];
+                    if (pages[index]) window.location.href = pages[index];
+                });
+            });
+
+            await loadPackages();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+<script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขโปรไฟล์ - Cartoon Club</title>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/edit-profile.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navbar Component -->
+        <div id="navbar"></div>
+        <main class="main-content">
+            <div class="edit-profile-wrapper">
+                <!-- Sidebar (rendered by components/Sidebar.js) -->
+                <aside class="edit-profile-sidebar" data-active="profile"></aside>
+                <!-- Edit Profile Content -->
+                <section class="edit-profile-content">
+                    <!-- Header -->
+                    <div class="edit-profile-header">
+                        <h1 class="edit-profile-title">แก้ไขข้อมูลส่วนตัว</h1>
+                        <p class="edit-profile-subtitle">รายละเอียดสมาชิก</p>
+                    </div>
+
+                    <!-- Edit Form Container -->
+                    <div class="edit-form-container">
+                        <!-- Field Group 1: Profile Image + Name -->
+                        <div class="field-group-1">
+                            <!-- Profile Image Section -->
+                            <div class="profile-image-section">
+                                <div class="profile-image-wrapper">
+                                    <img id="profileImagePreview" src="img/Rectangle 42.png" alt="Profile"
+                                        class="profile-image" />
+                                    <label for="profileImageInput" class="profile-image-edit">
+                                        <img src="icon/Edit-white.svg" alt="Edit" />
+                                    </label>
+                                    <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Name Field -->
+                            <div class="field-container">
+                                <div class="field-label">ชื่อ</div>
+                                <input type="text" id="nameInput" class="field-input" />
+                                <button type="button" class="field-edit-btn" data-field="name">
+                                    <img src="icon/Edit.svg" alt="Edit" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Field Group 2: Email, Phone, Password -->
+                        <div class="field-group-2">
+                            <!-- Email Field -->
+                            <div class="field-container">
+                                <div class="field-label">Email</div>
+                                <input type="email" id="emailInput" class="field-input"
+                                     />
+                                <button type="button" class="field-edit-btn" data-field="email">
+                                    <img src="icon/Edit.svg" alt="Edit" />
+                                </button>
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="field-container">
+                                <div class="field-label">เบอร์โทรศัพท์</div>
+                                <input type="tel" id="phoneInput" class="field-input"  />
+                                <button type="button" class="field-edit-btn" data-field="phone">
+                                    <img src="icon/Edit.svg" alt="Edit" />
+                                </button>
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="field-container">
+                                <div class="field-label">รหัสผ่าน</div>
+                                <input type="password" id="passwordInput" class="field-input"  />
+                                <button type="button" class="field-edit-btn" data-field="password">
+                                    <img src="icon/Edit.svg" alt="Edit" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="button" class="btn-save" id="save-button">บันทึก</button>
+                        <button type="button" class="btn-cancel" id="cancel-button">ยกเลิก</button>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="divider"></div>
+
+                    <!-- Delete Account Button -->
+                    <button type="button" class="btn-delete">ลบบัญชี</button>
+                </section>
+            </div>
+        </main>
+        <!-- Footer Component -->
+        <div id="footer"></div>
+    </div>
+    <!-- Lenis: smooth scroll lib (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+    <script type="module" src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+
+        <!-- Replace legacy firebase-compat/profile.js with module-based loader -->
+        <script type="module">
+            import { auth, db, app, updateUserDoc, getUserDoc } from './firebase-controller.js';
+            import { doc, getDoc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+            import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js';
+            import { onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
+
+            let currentUid = null;
+            let pendingImageFile = null;
+
+            // Use modular onAuthStateChanged
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) return; // not signed in
+                currentUid = user.uid;
+                try {
+                    const docSnap = await getUserDoc(user.uid);
+                    if (!docSnap || !docSnap.exists()) return;
+                    const data = docSnap.data();
+
+                    // Populate fields
+                    const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+                    const nameEl = document.getElementById('nameInput');
+                    const emailEl = document.getElementById('emailInput');
+                    const phoneEl = document.getElementById('phoneInput');
+                    const preview = document.getElementById('profileImagePreview');
+                    if (nameEl) nameEl.value = fullName || '';
+                    if (emailEl) emailEl.value = data.email || '';
+                    if (phoneEl) phoneEl.value = data.phone || '';
+                    if (preview && data.profileImageURL) preview.src = data.profileImageURL;
+                } catch (err) {
+                    console.error('Failed to load profile', err);
+                }
+            });
+
+            // Save handler
+            document.addEventListener('DOMContentLoaded', () => {
+                const saveBtn = document.getElementById('save-button');
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', async () => {
+                        try {
+                            const user = (auth && auth.currentUser) ? auth.currentUser : null;
+                            if (!user && !currentUid) return showAlertModal('ยังไม่ได้ล็อกอิน');
+                            const uid = (user && user.uid) ? user.uid : currentUid;
+
+                            const fullName = document.getElementById('nameInput').value || '';
+                            const [firstName, ...rest] = fullName.trim().split(' ');
+                            const lastName = rest.join(' ');
+                            const email = document.getElementById('emailInput').value || '';
+                            const phone = document.getElementById('phoneInput').value || '';
+
+                            // If a new profile image was selected, upload it first
+                            const profileImageInput = document.getElementById('profileImageInput');
+                            let downloadURL = null;
+                            const file = (profileImageInput && profileImageInput.files && profileImageInput.files[0]) ? profileImageInput.files[0] : null;
+                            if (file) {
+                                try {
+                                    const storage = getStorage(app);
+                                    const ext = (file.name && file.name.split('.').pop()) || (file.type && file.type.split('/').pop()) || 'jpg';
+                                    const sref = storageRef(storage, `profiles/${uid}/avatar_${Date.now()}.${ext}`);
+                                    const snap = await uploadBytes(sref, file);
+                                    downloadURL = await getDownloadURL(sref);
+                                    console.log('Uploaded image, downloadURL=', downloadURL);
+                                } catch (err) {
+                                    console.error('Image upload failed', err);
+                                    showAlertModal('ไม่สามารถอัปโหลดรูปได้: ' + (err.message || err));
+                                    return;
+                                }
+                            }
+
+                            const updates = {
+                                firstName: firstName || '',
+                                lastName: lastName || '',
+                                email: email || '',
+                                phone: phone || ''
+                            };
+                            if (downloadURL) updates.profileImageURL = downloadURL;
+
+                            const userRef = doc(db, 'users', uid);
+                            // Use setDoc with { merge: true } so the document will be created if it
+                            // doesn't exist yet (updateDoc would throw NOT_FOUND in that case).
+                            await setDoc(userRef, updates, { merge: true });
+
+                            // Handle password change if provided
+                            const password = (document.getElementById('passwordInput') && document.getElementById('passwordInput').value) ? document.getElementById('passwordInput').value.trim() : '';
+                            if (password) {
+                                if (!auth || !auth.currentUser) {
+                                    showAlertModal('ไม่พบผู้ใช้ที่ล็อกอิน กรุณาเข้าสู่ระบบใหม่');
+                                } else {
+                                    try {
+                                        // Try direct password update
+                                        await updatePassword(auth.currentUser, password);
+                                        showAlertModal('บันทึกข้อมูลโปรไฟล์สำเร็จ และเปลี่ยนรหัสผ่านเรียบร้อย');
+                                    } catch (err) {
+                                        // If recent login is required, attempt a simple reauthentication flow
+                                        if (err && err.code === 'auth/requires-recent-login') {
+                                            try {
+                                                // Use modal-based reauthentication flow instead of prompt()
+                                                const currentPwd = await showReauthModal();
+                                                if (!currentPwd) {
+                                                    showAlertModal('ต้องยืนยันตัวตนเพื่อเปลี่ยนรหัสผ่าน');
+                                                } else {
+                                                    const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPwd);
+                                                    await reauthenticateWithCredential(auth.currentUser, credential);
+                                                    await updatePassword(auth.currentUser, password);
+                                                    showAlertModal('บันทึกข้อมูลโปรไฟล์สำเร็จ และเปลี่ยนรหัสผ่านเรียบร้อย');
+                                                }
+                                            } catch (reauthErr) {
+                                                console.error('Reauthentication failed', reauthErr);
+                                                showAlertModal('การยืนยันตัวตนล้มเหลว: ' + (reauthErr.message || reauthErr));
+                                            }
+                                        } else if (err && err.code === 'auth/weak-password') {
+                                            showAlertModal('รหัสผ่านอ่อนเกินไป โปรดใช้รหัสผ่านที่ยาวขึ้นและมีตัวอักษรผสม');
+                                        } else {
+                                            console.error('Password update failed', err);
+                                            showAlertModal('ไม่สามารถเปลี่ยนรหัสผ่าน: ' + (err.message || err));
+                                        }
+                                    }
+                                }
+                            } else {
+                                // No password change requested
+                                showAlertModal('บันทึกข้อมูลโปรไฟล์สำเร็จ');
+                                // update preview immediately without full reload
+                                if (downloadURL) {
+                                    const preview = document.getElementById('profileImagePreview');
+                                    if (preview) preview.src = downloadURL;
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Save failed', err);
+                            showAlertModal('เกิดข้อผิดพลาดขณะบันทึก: ' + (err.message || err));
+                        }
+                    });
+                }
+
+                const deleteBtn = document.querySelector('.btn-delete');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async () => {
+                        if (!currentUid) return showAlertModal('ยังไม่ได้ล็อกอิน');
+                        if (!confirm('คุณแน่ใจว่าจะลบบัญชีนี้?')) return;
+                                    try {
+                                        // Delete Firestore doc only (deleting Auth user requires recent login and is better done server-side)
+                                        await deleteDoc(doc(db, 'users', currentUid));
+                                        showAlertModal('ลบบัญชีเรียบร้อยแล้ว (ข้อมูล Firestore)');
+                                        // Optionally sign out
+                                        window.location.href = 'index.html';
+                                    } catch (err) {
+                                        console.error('Delete failed', err);
+                                        showAlertModal('ไม่สามารถลบบัญชีได้');
+                                    }
+                    });
+                }
+            });
+        </script>
+
+    <script>
+        // showReauthModal returns a Promise that resolves to the entered password string,
+        // or null if the user cancels. It constructs a figma-style modal so appearance
+        // and behavior match `showAlertModal` (footer.js).
+        function showReauthModal() {
+            return new Promise((resolve) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'modal';
+                wrapper.innerHTML = `
+                    <div class="modal-content modal-figma" role="dialog" aria-modal="true">
+                        <div class="modal-figma-inner">
+                            <div class="modal-figma-text">
+                                <h1 class="modal-figma-title">ยืนยันตัวตน</h1>
+                                <p class="modal-figma-desc">โปรดกรอกรหัสผ่านปัจจุบันเพื่อตรวจสอบตัวตน (จะไม่ถูกบันทึก)</p>
+                            </div>
+                        </div>
+                        <div style="padding:0 20px 18px">
+                            <input id="_reauth_input" type="password" placeholder="รหัสผ่านปัจจุบัน" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;margin-top:8px" />
+                        </div>
+                        <div class="modal-footer modal-footer-figma" style="justify-content:flex-end;padding:12px 20px 18px">
+                            <button type="button" class="btn-figma-secondary" data-action="modal-btn" data-idx="0">ยกเลิก</button>
+                            <button type="button" class="btn-figma-primary" data-action="modal-btn" data-idx="1">ยืนยัน</button>
+                        </div>
+                    </div>
+                `;
+
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target === wrapper) {
+                        cleanup();
+                        resolve(null);
+                    }
+                });
+
+                function cleanup() {
+                    document.body.style.overflow = '';
+                    wrapper.remove();
+                }
+
+                document.body.appendChild(wrapper);
+                document.body.style.overflow = 'hidden';
+
+                const inputEl = wrapper.querySelector('#_reauth_input');
+                const buttons = wrapper.querySelectorAll('[data-action="modal-btn"]');
+
+                buttons.forEach(btn => btn.addEventListener('click', (e) => {
+                    const idx = Number(btn.dataset.idx || 0);
+                    if (idx === 0) {
+                        cleanup();
+                        resolve(null);
+                    } else {
+                        const val = inputEl.value || '';
+                        cleanup();
+                        resolve(val);
+                    }
+                }));
+
+                wrapper.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        cleanup();
+                        resolve(null);
+                    } else if (e.key === 'Enter') {
+                        const val = inputEl.value || '';
+                        cleanup();
+                        resolve(val);
+                    }
+                });
+
+                setTimeout(() => inputEl.focus(), 30);
+            });
+        }
+    </script>
+
+        <!-- Edit-profile.js handles UI interactions only -->
+        <script src="js/edit-profile.js"></script>
+
+
+</body>
+
+</html>

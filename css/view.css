@@ -1,0 +1,401 @@
+/* View Page Styles */
+
+/* Main Container */
+.view-container {
+    min-height: 100vh;
+    background-color: rgba(255, 245, 223, 0.8);
+    padding-top: 120px; /* Navbar height */
+    padding-bottom: 0;
+}
+
+.view-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 47px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+/* Video Section */
+.video-section {
+    flex-shrink: 0;
+}
+
+.video-player-wrapper {
+    position: relative;
+    width: 890px;
+    height: 501px;
+    background-color: #000;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.video-player {
+    width: 100%;
+    height: 100%;
+}
+
+.video-player iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Video Controls Overlay */
+.video-controls-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.video-player-wrapper:hover .video-controls-overlay {
+    opacity: 1;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    padding: 0 0 10px 0;
+}
+
+.progress-bar {
+    position: relative;
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+}
+
+.progress-track {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background-color: #d9d9d9;
+    border-radius: 3px;
+}
+
+.progress-fill {
+    position: absolute;
+    height: 5px;
+    background-color: #ff0000;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.progress-thumb {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    top: -2.5px;
+    left: 0%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.progress-bar:hover .progress-thumb {
+    opacity: 1;
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.controls-left,
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    position: relative;
+}
+
+.control-btn:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+.control-btn i {
+    font-size: 20px;
+}
+
+.control-btn .skip-time {
+    position: absolute;
+    font-size: 10px;
+    font-weight: bold;
+    bottom: 2px;
+    right: 2px;
+}
+
+/* Volume Slider */
+.volume-slider {
+    position: relative;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.3s ease;
+}
+
+.controls-left:hover .volume-slider,
+.volume-slider:hover {
+    width: 80px;
+}
+
+.volume-slider input[type="range"] {
+    width: 80px;
+    height: 4px;
+    cursor: pointer;
+}
+
+.volume-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.volume-slider input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* Details Section */
+.details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 450px;
+    flex-shrink: 0;
+}
+
+/* Cartoon Details */
+.cartoon-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cartoon-title {
+    font-family: "IBM Plex Sans Thai", sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--primary-purple);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cartoon-description {
+    font-family: "IBM Plex Sans Thai", "Noto Sans Thai", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-black);
+}
+
+.cartoon-description p {
+    margin: 0;
+}
+
+/* Episode Selector */
+.episode-selector {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+/* Custom Scrollbar */
+.episode-selector::-webkit-scrollbar {
+    width: 8px;
+}
+
+.episode-selector::-webkit-scrollbar-track {
+    background: rgba(217, 217, 217, 0.3);
+    border-radius: 4px;
+}
+
+.episode-selector::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    border-radius: 4px;
+}
+
+.episode-selector::-webkit-scrollbar-thumb:hover {
+    background: #b0b0b0;
+}
+
+/* Episode Grid */
+.episode-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 17px;
+    width: 100%;
+}
+
+/* Episode Button */
+.episode-btn {
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 5px;
+    padding: 15px 20px;
+    font-size: 18px;
+    color: var(--text-black);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 400;
+    min-width: 60px;
+}
+
+.episode-btn:hover {
+    background-color: #c0c0c0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.episode-btn.active {
+    background-color: var(--primary-red);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(193, 39, 45, 0.4);
+}
+
+.episode-btn.active:hover {
+    background-color: #a01f24;
+}
+
+/* Responsive adjustments for smaller desktop screens */
+@media (max-width: 1600px) {
+    .view-content {
+        gap: 30px;
+    }
+    
+    .video-player-wrapper {
+        width: 750px;
+        height: 422px;
+    }
+    
+    .details-section {
+        width: 350px;
+    }
+    
+    .cartoon-title {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .view-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .video-player-wrapper {
+        width: 890px;
+        height: 501px;
+    }
+    
+    .details-section {
+        width: 890px;
+        flex-direction: row;
+        gap: 30px;
+    }
+    
+    .cartoon-details {
+        flex: 1;
+    }
+    
+    .episode-selector {
+        flex: 1;
+        max-height: 300px;
+    }
+}
+
+/* --- วางต่อท้ายไฟล์ css/view.css --- */
+
+.ad-ui-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    background: #fdfdfd;
+    border-radius: 10px;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+}
+
+.ad-ui-container h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-purple);
+    margin: 0;
+}
+
+.ad-ui-container p {
+    font-size: 16px;
+    color: var(--text-black);
+    margin: 0;
+}
+
+.ad-skip-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--primary-red);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.ad-skip-btn:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
+
+.ad-skip-btn i {
+    color: #ffca35; /* สีดาว VIP */
+}
+
+.ad-counter {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    margin-top: 10px;
+}

@@ -1,0 +1,347 @@
+/* ========================================
+   Packages Page Styles
+   Based on Figma Layer Structure (node-id: 14:356)
+   ======================================== */
+
+/* Main Layout */
+.packages-wrapper {
+    display: flex;
+    gap: var(--spacing-4xl);
+    padding: 120px 130px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   Sidebar Menu (Frame 74:724)
+   ======================================== */
+
+.packages-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    width: 195px;
+    flex-shrink: 0;
+}
+
+/* Reuse menu styles from profile.css */
+.packages-sidebar .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+.packages-sidebar .menu-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.packages-sidebar .menu-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.packages-sidebar .menu-text {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--color-secondary);
+    white-space: nowrap;
+}
+
+.packages-sidebar .menu-text.large {
+    font-size: var(--font-size-2xl);
+}
+
+.packages-sidebar .menu-text.active {
+    color: var(--color-secondary);
+}
+
+
+/* ========================================
+   Packages Content (Frame 76:675)
+   ======================================== */
+
+.packages-content {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    width: 878px;
+    flex: 1;
+    margin-bottom: 48px;
+    /* เพิ่มช่องว่างด้านล่างระหว่าง package details กับ footer */
+}
+
+.packages-header {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    width: 276px;
+}
+
+.packages-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+}
+
+.packages-subtitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-secondary);
+}
+
+/* ========================================
+   Package Cards Grid (Frame 76:673)
+   ======================================== */
+
+.packages-grid {
+    display: flex;
+    gap: 29px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* ========================================
+   Individual Package Card (Frame 22:1190)
+   ======================================== */
+
+.package-card {
+    display: flex;
+    flex-direction: column;
+    width: 275px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.package-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Package Header */
+.package-header {
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center title like Figma */
+    height: 72px;
+    padding: 0 var(--spacing-md);
+    gap: 12px;
+}
+
+.package-name {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    text-align: center;
+    width: 100%;
+}
+
+/* Upgrade button (primary action) */
+.btn-upgrade {
+    --btn-pad-x: 14px;
+    --btn-pad-y: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: var(--btn-pad-y) var(--btn-pad-x);
+    background: var(--color-accent, #c1272d);
+    color: var(--color-white);
+    border: none;
+    border-radius: 8px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+
+.btn-upgrade:hover { transform: translateY(-2px); opacity: .95; }
+.btn-upgrade:active { transform: translateY(0); }
+
+
+/* Improve grid wrapping so cards flow on multiple rows */
+.packages-grid {
+    display: flex;
+    gap: 29px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* Each package is a column containing the card and the action button (Figma layout) */
+.package-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+    width: 275px;
+    flex-shrink: 0;
+}
+
+.package-action {
+    width: 275px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Primary action button under the card */
+.package-action .btn-upgrade {
+    width: 100%;
+    height: 51.445px; /* match Figma visual */
+    padding: 12px 27px;
+    border-radius: 10px;
+    background: var(--color-accent, #c1272d);
+    color: #fff;
+    font-size: 20px;
+    font-weight: var(--font-weight-bold);
+    border: none;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+
+/* Disabled / current package style: white with red border */
+.package-action .btn-upgrade[disabled] {
+    background: #fff;
+    color: var(--color-accent, #c1272d);
+    border: 2px solid var(--color-accent, #c1272d);
+}
+
+/* Package Price */
+.package-price {
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    padding: var(--spacing-xs);
+}
+
+.package-price-text {
+    font-size: 40px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-secondary);
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: -1.6px;
+    width: 246px;
+}
+
+/* Package Details */
+.package-details {
+    background-color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 320px; /* match Figma */
+    padding: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.package-features {
+    font-size: var(--font-size-sm);
+    color: var(--color-secondary);
+    line-height: 1.6;
+}
+
+.package-features p {
+    margin: 0 0 8px 0;
+}
+
+.package-features .feature-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 4px;
+}
+
+.package-features .feature-description {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    margin-bottom: 12px;
+}
+
+/* Special styling for year package */
+.package-card.year-package .package-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 1200px) {
+    .packages-wrapper {
+        padding: 0 50px;
+        gap: 50px;
+    }
+
+    .packages-content {
+        width: 100%;
+    }
+
+    .packages-grid {
+        gap: 20px;
+    }
+
+    .package-card {
+        width: calc(33.333% - 14px);
+    }
+}
+
+@media (max-width: 900px) {
+    .packages-wrapper {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .packages-sidebar {
+        width: 100%;
+    }
+
+    .packages-content {
+        width: 100%;
+    }
+
+    .packages-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .package-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .packages-title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .packages-subtitle {
+        font-size: var(--font-size-md);
+    }
+
+    .package-price-text {
+        font-size: 32px;
+    }
+
+    .package-details {
+        height: auto;
+        min-height: 280px;
+    }
+}

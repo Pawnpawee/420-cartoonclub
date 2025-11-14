@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reports - Cartoon Club MIS">
+  <title>รายงานสรุปผล - Cartoon Club</title>
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/global.css">
+  
+</head>
+<body>
+  <!-- Dashboard Wrapper -->
+  <div class="dashboard-wrapper">
+    <!-- Navbar Component -->
+    <div id="navbar"></div>
+    
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      
+      <!-- Sidebar Menu (shared admin sidebar component) -->
+      <aside class="admin-sidebar sidebar" data-active="reports"></aside>
+      
+      <!-- Main Content -->
+      <main class="main-content reports-main">
+        
+        <!-- Content Header -->
+        <header class="reports-header">
+          <h1 class="page-title">รายงานสรุปผล</h1>
+          <button class="year-selector">
+            <span>รายปี</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </header>
+        
+        <div class="divider"></div>
+        
+        <!-- Report Section -->
+        <section class="report-section">
+          
+          <!-- Rates Row -->
+          <div class="rates-row">
+            <!-- Renewal Rate Card -->
+            <div class="rate-card">
+              <div class="rate-card-content">
+                <h3 class="rate-title">อัตราการต่ออายุ</h3>
+                <div class="rate-value-row">
+                  <div class="rate-value">-</div>
+                  <div class="rate-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>-</span>
+                  </div>
+                </div>
+                <div class="rate-graph-placeholder">
+                 
+                </div>
+              </div>
+            </div>
+            
+            <!-- Churn Rate Card -->
+            <div class="rate-card">
+              <div class="rate-card-content">
+                <h3 class="rate-title">อัตราการเลิกใช้</h3>
+                <div class="rate-value-row">
+                  <div class="rate-value">-</div>
+                  <div class="rate-change negative">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>-</span>
+                  </div>
+                </div>
+                <div class="rate-graph-placeholder">
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Trend Chart -->
+          <div class="trend-chart-card">
+            <div class="trend-chart-header">
+              <h2 class="trend-chart-title">แนวโน้มการต่ออายุเทียบกับการเลิกใช้</h2>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <span class="legend-indicator renewal"></span>
+                  <span class="legend-text">อัตราการต่ออายุ</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-indicator churn"></span>
+                  <span class="legend-text">อัตราการเลิกใช้</span>
+                </div>
+              </div>
+            </div>
+            <div class="trend-chart-content">
+              <div class="chart-y-axis">
+                <span>100</span>
+                <span>80</span>
+                <span>60</span>
+                <span>40</span>
+                <span>20</span>
+              </div>
+              <div class="chart-area">
+                <div class="chart-placeholder">
+                  
+                </div>
+                <div class="chart-x-axis">
+                  <span>มกราคม</span>
+                  <span>กุมภาพันธ์</span>
+                  <span>มีนาคม</span>
+                  <span>เมษายน</span>
+                  <span>พฤษภาคม</span>
+                  <span>มิถุนายน</span>
+                  <span>กรกฎาคม</span>
+                  <span>สิงหาคม</span>
+                  <span>กันยายน</span>
+                  <span>ตุลาคม</span>
+                  <span>พฤศจิกายน</span>
+                  <span>ธันวาคม</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top 10 Weekly Popular Content -->
+          <div class="top10-weekly-card">
+            <div class="top10-header">
+              <h2>10 อันดับการ์ตูนยอดนิยมรายสัปดาห์</h2>
+            </div>
+            <div id="top10WeeklyList" class="top10-list" style="padding:12px;">
+              <p style="color:#999">กำลังโหลดข้อมูล...</p>
+            </div>
+          </div>
+          
+          <!-- Package Proportion Row -->
+          <div class="proportion-row">
+            <!-- Renewal Proportion Card -->
+            <div class="proportion-card">
+              <div class="proportion-card-content">
+                <h3 class="proportion-title">สัดส่วนการต่ออายุ (ตามแพ็กเกจ)</h3>
+                <div class="proportion-list">
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ ฟรี</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar renewal" style="width: 0%;" data-key="free"></div>
+                        </div>
+                        <div class="proportion-value" data-key="free">-</div>
+                  </div>
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ รายเดือน</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar renewal" style="width: 0%;" data-key="monthly"></div>
+                    </div>
+                    <div class="proportion-value" data-key="monthly">-</div>
+                  </div>
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ รายปี</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar renewal" style="width: 0%;" data-key="yearly"></div>
+                    </div>
+                    <div class="proportion-value" data-key="yearly">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Churn Proportion Card -->
+            <div class="proportion-card">
+              <div class="proportion-card-content">
+                <h3 class="proportion-title">สัดส่วนการเลิกใช้บริการ (ตามแพ็กเกจ)</h3>
+                <div class="proportion-list">
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ ฟรี</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar churn" style="width: 0%;" data-key="free"></div>
+                    </div>
+                    <div class="proportion-value" data-key="free">-</div>
+                  </div>
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ รายเดือน</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar churn" style="width: 0%;" data-key="monthly"></div>
+                    </div>
+                    <div class="proportion-value" data-key="monthly">-</div>
+                  </div>
+                  <div class="proportion-item">
+                    <div class="proportion-label">แพ็คเกจ รายปี</div>
+                    <div class="progress-bar-container">
+                      <div class="progress-bar churn" style="width: 0%;" data-key="yearly"></div>
+                    </div>
+                    <div class="proportion-value" data-key="yearly">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </section>
+        
+      </main>
+      
+    </div>
+    
+  </div>
+  
+  <!-- JavaScript -->
+  <script type="module" src="js/footer.js"></script>
+  <script type="module" src="js/navbar.js"></script>
+  <script type="module" src="js/sidebar.js"></script>
+  <!-- Footer Component -->
+  <div id="footer"></div>
+
+  <!-- Lenis: smooth scroll lib (jsDelivr) -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+  <script type="module" src="js/reports.js"></script>
+  <script type="module">
+    // Show a calculation loading overlay, start reportsCalculator, and hide when first calculation finishes
+    (function(){
+      // create overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'reports-calc-loader';
+      overlay.setAttribute('role','status');
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.flexDirection = 'column';
+      overlay.style.gap = '12px';
+      overlay.style.background = '#fff5df';
+      overlay.style.zIndex = '99998';
+      overlay.style.transition = 'opacity .35s ease,visibility .35s ease';
+      overlay.innerHTML = `
+        <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:120px;height:auto;margin-bottom:12px;"/>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>
+          <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>
+          <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>
+        </div>
+        <div style="margin-top:8px;color:#333;font-weight:600;">กำลังคำนวณรายงาน...</div>
+        <style>@keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}} #reports-calc-loader.calc-hidden{opacity:0;visibility:hidden;pointer-events:none}</style>
+      `;
+      document.body.appendChild(overlay);
+
+      // helper to hide
+      function hideOverlay(){
+        overlay.classList.add('calc-hidden');
+        setTimeout(()=>{ if(overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 420);
+      }
+
+      // start calculator and wait for event
+      import('./functions/calculate-reports.js').then(mod => {
+        const reportsCalculator = mod.default;
+        try {
+          reportsCalculator.start();
+        } catch(e) { console.warn('Could not start reportsCalculator:', e); }
+
+        // hide overlay when calculation finishes (success or failure)
+        const onDone = () => { hideOverlay(); window.removeEventListener('reportsCalculated', onDone); };
+        window.addEventListener('reportsCalculated', onDone);
+
+        // safety timeout: hide after 20s to avoid stuck UI
+        setTimeout(() => {
+          if (document.getElementById('reports-calc-loader')) {
+            console.warn('reportsCalculated event did not arrive in time — hiding loader');
+            hideOverlay();
+            window.removeEventListener('reportsCalculated', onDone);
+          }
+        }, 20000);
+      }).catch(err => {
+        console.error('Failed to import reportsCalculator:', err);
+        // hide overlay to allow UI to continue
+        setTimeout(()=>{ try{ if(document.getElementById('reports-calc-loader')) document.getElementById('reports-calc-loader').remove(); }catch(e){} }, 500);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+/* ========================================
+   Edit Profile Page Styles
+   Based on Figma Layer Structure (node-id: 14:389)
+   ======================================== */
+
+.edit-profile-wrapper {
+    display: flex;
+    gap: 173px;
+    padding: 120px 130px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.edit-profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    width: 195px;
+    flex-shrink: 0;
+}
+
+.edit-profile-sidebar .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+
+.edit-profile-sidebar .menu-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-profile-sidebar .menu-icon.large {
+    width: 42px;
+    height: 42px;
+}
+
+.edit-profile-sidebar .menu-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.edit-profile-sidebar .menu-text {
+    font-weight: 700;
+    font-size: 24px;
+    color: #3d3387;
+    white-space: nowrap;
+}
+
+.edit-profile-sidebar .menu-text.large {
+    font-size: 32px;
+}
+
+.edit-profile-sidebar .menu-text.active {
+    color: #3d3387;
+}
+
+
+/* Edit Profile Content */
+.edit-profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 876px;
+    flex: 1;
+    margin-bottom: 48px;
+}
+
+.edit-profile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    width: 317px;
+}
+
+.edit-profile-title {
+    font-size: 40px;
+    font-weight: 700;
+    color: #3d3387;
+    line-height: normal;
+}
+
+.edit-profile-subtitle {
+    font-size: 24px;
+    font-weight: 400;
+    color: #3d3387;
+    line-height: normal;
+}
+
+/* Edit Form Container */
+.edit-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+}
+
+/* Field Group 1: Profile Image + Name */
+.field-group-1 {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Field Group 2: Email, Phone, Password */
+.field-group-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+}
+
+/* Profile Image Section */
+.profile-image-section {
+    position: relative;
+    width: 216px;
+    height: 175px;
+    flex-shrink: 0;
+}
+
+.profile-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-image-edit {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.profile-image-edit:hover {
+    background: white;
+}
+
+.profile-image-edit i {
+    color: white;
+    font-size: 16px;
+}
+
+/* Edit Fields */
+.field-container {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    height: 84px;
+    width: 100%;
+    padding: 0 18px;
+    position: relative;
+}
+
+.field-label {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #c2292f;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 7px 18px;
+    border-radius: 0 15px 15px 0;
+    white-space: nowrap;
+}
+
+.field-label-small {
+    position: absolute;
+    left: 236px;
+    top: 16px;
+    color: #3d3387;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.field-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: 700;
+    color: #3d3387;
+    text-align: right;
+    padding-right: 70px;
+    outline: none;
+}
+
+.field-group-1 .field-container .field-input {
+    margin-left: 236px;
+    text-align: right;
+}
+
+.field-edit-btn {
+    position: absolute;
+    right: 33px;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.field-edit-btn:hover {
+    opacity: 0.7;
+}
+
+.field-edit-btn i {
+    color: #3d3387;
+    font-size: 24px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-save {
+    background: #c1272d;
+    border: 1px solid #d9d9d9;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    height: 56px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-save:hover {
+    background: #a01f24;
+}
+
+.btn-cancel {
+    background: white;
+    border: 1px solid #d9d9d9;
+    color: black;
+    font-size: 20px;
+    font-weight: 700;
+    height: 56px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f5f5f5;
+}
+
+/* Divider */
+.divider {
+    width: 100%;
+    height: 1px;
+    background: #d9d9d9;
+    margin: 28px 0;
+}
+
+/* Delete Button */
+.btn-delete {
+    background: white;
+    border: 1px solid #d9d9d9;
+    color: #c1272d;
+    font-size: 20px;
+    font-weight: 700;
+    height: 56px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-delete:hover {
+    background: #fff5f5;
+    color: #900b09;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .edit-profile-wrapper {
+        gap: 80px;
+        padding: 0 50px;
+    }
+}
+
+@media (max-width: 900px) {
+    .edit-profile-wrapper {
+        flex-direction: column;
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .edit-profile-sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 24px;
+        overflow-x: auto;
+    }
+
+    .edit-profile-content {
+        width: 100%;
+    }
+
+    .field-group-1 {
+        flex-direction: column;
+        gap: 28px;
+    }
+
+    .profile-image-section {
+        width: 100%;
+        height: 200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .edit-profile-title {
+        font-size: 32px;
+    }
+
+    .edit-profile-subtitle {
+        font-size: 18px;
+    }
+
+    .field-label {
+        font-size: 16px;
+        padding: 6px 12px;
+    }
+
+    .field-input {
+        font-size: 16px;
+    }
+
+    .btn-save,
+    .btn-cancel,
+    .btn-delete {
+        font-size: 18px;
+        height: 48px;
+    }
+}
