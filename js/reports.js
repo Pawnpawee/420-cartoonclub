@@ -39,7 +39,7 @@ class Reports {
   async loadReportsData() {
     try {
       // Load all data from the single main_summary document
-      const summaryRef = doc(db, 'reports', 'main_summary');
+      const summaryRef = doc(db, 'reports', 'daily_summary');
       const summarySnap = await getDoc(summaryRef);
       
       if (summarySnap.exists()) {
@@ -52,10 +52,10 @@ class Reports {
         // Get monthly trends directly from the summary document
         this.data.monthlyTrends = data.monthlyTrends || [];
         
-        console.log('✅ Loaded data from main_summary:', data);
+        console.log('✅ Loaded data from daily_summary:', data);
       } else {
-        console.warn('⚠️ `reports/main_summary` not found, using default values');
-        this.showError('ไม่พบข้อมูลสรุป (main_summary document)');
+        console.warn('⚠️ `reports/daily_summary` not found, using default values');
+        this.showError('ไม่พบข้อมูลสรุป (daily_summary document)');
       }
       
       // Update UI with the loaded data
