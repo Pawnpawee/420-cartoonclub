@@ -193,7 +193,7 @@ a { color: inherit; }
 }
 
 .modal-content {
-  background-color: var(--color-background-white);
+  background-color: #fff5df;
   border-radius: var(--radius-md);
   width: 90%;
   max-width: 700px;
@@ -201,6 +201,7 @@ a { color: inherit; }
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   animation: modalSlideIn 0.3s ease-out;
+  padding: 20px;
 }
 
 @keyframes modalSlideIn {

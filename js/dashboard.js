@@ -333,17 +333,17 @@ class Dashboard {
       "พ.ย.",
       "ธ.ค.",
     ];
-    const data =
-      this.data.monthlyRevenue.length > 0
-        ? this.data.monthlyRevenue
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const data = [
+      51127, 53732, 39386, 56214, 42337, 46158, 74773, 53432, 52604, 44663,
+      81912, 44663,
+    ];
 
     // หาค่าสูงสุดเพื่อ scale กราฟ
     const maxValue = Math.max(...data, 1);
 
     chartContainer.innerHTML = `
-      <div style="position: relative; height: 266px; padding: 0 20px;">
-        <svg width="100%" height="200" style="margin-bottom: 20px;">
+      <div style="position: relative; height: 100%; padding: 0 10px;">
+        <svg width="100%" height="200" viewBox="0 0 1100 200" preserveAspectRatio="none" style="margin-bottom: 20px;">
           <polyline
             fill="none"
             stroke="#2ecc71"
@@ -351,22 +351,21 @@ class Dashboard {
             points="${data
               .map(
                 (val, idx) =>
-                  `${(idx * 100) / 11},${200 - (val / maxValue) * 180}`
+                  `${idx * 100},${200 - (val / maxValue) * 180}`
               )
               .join(" ")}"
-            style="transform: translateX(20px);"
           />
           ${data
             .map(
               (val, idx) => `
-            <circle cx="${(idx * 100) / 11 + 20}" cy="${
+            <circle cx="${idx * 100}" cy="${
                 200 - (val / maxValue) * 180
-              }" r="4" fill="#2ecc71" />
+              }" r="4" fill="#2ecc71" vector-effect="non-scaling-stroke" />
           `
             )
             .join("")}
         </svg>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
+        <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 0; font-size: 18px; color: #666; text-align: center;">
           ${months.map((month) => `<span>${month}</span>`).join("")}
         </div>
       </div>
@@ -593,33 +592,52 @@ class Dashboard {
   }
 
   // Render a short list of recent members (first 5)
-  renderMemberList() {
+  async renderMemberList() {
     const container = document.getElementById("memberList");
     if (!container) return;
 
-    const members = this.data._memberList || [];
-    if (members.length === 0) {
-      container.innerHTML =
-        '<div class="member-item" style="justify-content: center; color: #888;">ไม่มีข้อมูลสมาชิก</div>';
-      return;
-    }
-    container.innerHTML = members
-      .map((m) => {
-        const name = m.name || "Unnamed";
-        const initials = name
-          .split(" ")
-          .map((p) => p[0])
-          .slice(0, 2)
-          .join("")
-          .toUpperCase();
-        return `
+    try {
+      // ดึงข้อมูล 5 รายการแรกจาก users collection
+      const q = query(
+        collection(db, "users"),
+        orderBy("createdAt", "desc"),
+        limit(5)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        container.innerHTML =
+          '<div class="member-item" style="justify-content: center; color: #888;">ไม่มีข้อมูลสมาชิก</div>';
+        return;
+      }
+
+      // แสดงรายชื่อแบบเดิม ใช้สไตล์ member-item
+      container.innerHTML = snapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          const name =
+            `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
+            data.displayName ||
+            "Unnamed";
+          const initials = name
+            .split(" ")
+            .map((p) => p[0])
+            .slice(0, 2)
+            .join("")
+            .toUpperCase();
+          return `
         <div class="member-item">
           <div class="member-avatar">${initials}</div>
           <div class="member-name">${name}</div>
         </div>
       `;
-      })
-      .join("");
+        })
+        .join("");
+    } catch (error) {
+      console.error("Error loading member list:", error);
+      container.innerHTML =
+        '<div class="member-item" style="justify-content: center; color: #888;">เกิดข้อผิดพลาด</div>';
+    }
   }
 
   // Method to update dashboard data

@@ -77,7 +77,7 @@ if (contentTableBody) {
 async function loadPage(){
     try {
         const cRef = collection(db, 'content');
-        const snap = await getDocs(query(cRef, orderBy('title'), limit(10)));
+        const snap = await getDocs(query(cRef, orderBy('title'), limit(20)));
         contents = snap.docs.map(d => ({ id: d.id, data: d.data() }));
 
         // pagination setup

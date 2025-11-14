@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Popup สำหรับแจ้ง admin ว่าไม่สามารถดู index/คอนเทนต์ได้
 function showAdminBlockedPopup() {
   const modalContent = `
-    <div style='font-size:1.1rem;margin-bottom:1rem;'>เพื่อดูคอนเทนต์บนเว็บไซต์ กรุณาใช้บัญชีที่มี role: "user" หรือเปลี่ยนเป็นบัญชีผู้ใช้ปกติ</div>
+    <div style='font-size:1.1rem;margin-bottom:1rem;padding:32px 20px;'>เพื่อดูคอนเทนต์บนเว็บไซต์ กรุณาใช้บัญชีที่มี role: "user" หรือเปลี่ยนเป็นบัญชีผู้ใช้ปกติ</div>
     <div style='display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;'>
       <button id='adminGoDashboard' class='btn-figma-secondary' style='padding:0.5rem 1rem;'>ไปที่แดชบอร์ด</button>
       <button id='adminLogout' class='btn-figma-primary' style='padding:0.5rem 1rem;'>ออกจากระบบ</button>
@@ -217,6 +217,8 @@ function renderCarousel(carouselId, docs) {
     return;
   }
 
+  const defaultThumbnail = "https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/E8vDc_W8CLv7-yMQu8KMEC7Rrr8/AAAABcEXJRHDMvWDoCn3shb0-LC7kPE6reaeSw7JtWOMu01hOhZ2mWC-QbWFfGKznZAQCKCrRw2akMYxixh1y4-ZdZ59Xkn8m04Gz2Rl.jpg?r=b6a";
+
   let html = "";
   docs.forEach((doc) => {
     const data = doc.data();
@@ -234,7 +236,7 @@ function renderCarousel(carouselId, docs) {
                data-id="${docId}" 
                title="${data.title}"
                data-video-id="${data.heroImageURL || ""}" > 
-              <img src="${data.thumbnailURL}" alt="${data.title}">
+              <img src="${data.thumbnailURL}" alt="${data.title}" onerror="this.src='${defaultThumbnail}'">
               <div class="card-overlay"></div>
               <div class="card-title">${data.title}</div>
               ${vipBadge}
@@ -249,6 +251,8 @@ function renderCarousel(carouselId, docs) {
 function renderTop10(containerId, docs) {
   const container = document.getElementById(containerId);
   if (!container) return;
+
+  const defaultThumbnail = "https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/E8vDc_W8CLv7-yMQu8KMEC7Rrr8/AAAABcEXJRHDMvWDoCn3shb0-LC7kPE6reaeSw7JtWOMu01hOhZ2mWC-QbWFfGKznZAQCKCrRw2akMYxixh1y4-ZdZ59Xkn8m04Gz2Rl.jpg?r=b6a";
 
   let html = "";
   let rank = 1;
@@ -271,7 +275,7 @@ function renderTop10(containerId, docs) {
                title="${data.title}"
                data-video-id="${data.heroImageURL || ""}" > <img src="${
       data.thumbnailURL
-    }" alt="${data.title}">
+    }" alt="${data.title}" onerror="this.src='${defaultThumbnail}'">
                   <div class="card-overlay"></div>
                   <div class="card-title">${data.title}</div>
                   ${vipBadge}

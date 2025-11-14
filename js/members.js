@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load members from Firestore
 async function loadMembers() {
   try {
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(10));
+    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(20));
     const snapshot = await getDocs(q);
     // Filter out users with role === 'admin' and map to members array
     members = snapshot.docs

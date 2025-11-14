@@ -77,6 +77,39 @@ function createNavbar() {
         vipButton.addEventListener('click', handleVIPClick);
     }
     
+    // 3.3 Handle smooth scroll with offset for section links
+    const navLinks = document.querySelectorAll('.navbar-nav a[href*="#"]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (!href) return;
+            
+            // Check if it's a hash link to current page
+            const [path, hash] = href.split('#');
+            if (hash && (path === 'index.html' || path === '')) {
+                e.preventDefault();
+                
+                // If we're not on index.html, navigate there first
+                if (!window.location.pathname.includes('index.html') && window.location.pathname !== '/') {
+                    window.location.href = href;
+                    return;
+                }
+                
+                // Scroll to section with offset
+                const targetSection = document.querySelector(`.${hash}`);
+                if (targetSection) {
+                    const offset = 150;
+                    const targetPosition = targetSection.offsetTop - offset;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+    
 }
 
 // --- 4. ฟังก์ชันสำหรับ Search และ VIP (ย้ายมาไว้ข้างใน) ---
