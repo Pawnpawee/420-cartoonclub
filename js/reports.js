@@ -3,7 +3,7 @@
  * แสดงรายงานสรุปผล - Renewal Rate, Churn Rate, และแนวโน้ม
  */
 
-import { auth, db } from '../firebase-controller.js';
+import { auth, db, getUserDoc } from '../firebase-controller.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
 import { 
   doc, 
@@ -435,7 +435,6 @@ class Reports {
 
 // Initialize reports when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // ตรวจสอบสิทธิ์ผู้ใช้ก่อน init reports
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = 'login.html';
@@ -443,7 +442,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const { getUserDoc } = await import('../firebase-controller.js');
       const userDoc = await getUserDoc(user.uid);
       const role = (userDoc && userDoc.exists()) ? (userDoc.data().role || 'user') : 'user';
       

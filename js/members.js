@@ -1,5 +1,5 @@
 // Members Management - Firestore-backed
-import { db } from '../firebase-controller.js';
+import { db, auth, getUserDoc } from '../firebase-controller.js';
 import {
   collection,
   getDocs,
@@ -14,6 +14,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 import { where } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 import Modal from '../components/Modal.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 // State management
 let members = [];
@@ -55,10 +56,39 @@ const paymentBadgeClasses = {
   'unpaid': 'badge-unpaid'
 };
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', () => {
+function initializeMembers() {
   initializeEventListeners();
   loadMembers();
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', () => {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      // Not logged in, redirect to login page
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      const userDoc = await getUserDoc(user.uid);
+      const role = (userDoc && userDoc.exists()) ? (userDoc.data().role || 'user') : 'user';
+      
+      if (role !== 'admin') {
+        // Not an admin, redirect to the main page
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // User is an admin, proceed to load members
+      initializeMembers();
+
+    } catch (err) {
+      console.error('Error validating admin role:', err);
+      // On error, redirect to the main page for safety
+      window.location.href = 'index.html';
+    }
+  });
 });
 
 // Load members from Firestore

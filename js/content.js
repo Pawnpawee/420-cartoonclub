@@ -1,8 +1,9 @@
 // js/content.js
 // Admin UI for managing content collection and episodes subcollection
 
-import { db } from '../firebase-controller.js';
+import { db, auth, getUserDoc } from '../firebase-controller.js';
 import { collection, query, orderBy, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 import Modal from '../components/Modal.js';
 
 // lightweight dialog adapters (use project's modal system if available)
@@ -375,5 +376,37 @@ async function openEpisodesManager(contentId){
     }
 }
 
-// Initial load
-loadPage();
+// Initialize authentication check
+document.addEventListener('DOMContentLoaded', () => {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      // Not logged in, redirect to login page
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      const userDoc = await getUserDoc(user.uid);
+      const role = (userDoc && userDoc.exists()) ? (userDoc.data().role || 'user') : 'user';
+      
+      if (role !== 'admin') {
+        // Not an admin, redirect to the main page
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // User is an admin, proceed to load content
+      initializeContent();
+
+    } catch (err) {
+      console.error('Error validating admin role:', err);
+      // On error, redirect to the main page for safety
+      window.location.href = 'index.html';
+    }
+  });
+});
+
+function initializeContent() {
+  // Initial load
+  loadPage();
+}

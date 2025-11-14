@@ -115,6 +115,34 @@ class Dashboard {
 
       this.data.packageDistribution = counts;
 
+      // Overwrite totalMembers with the fresh count of all non-admin users for consistency
+      this.data.totalMembers = memberListItems.length;
+
+      // Additional diagnostics: breakdown of user statuses
+      try {
+        const totalUsers = users.length;
+        const nonAdminUsers = users.filter(u => ((u.role||'').toString().toLowerCase() !== 'admin')).length;
+        const activeUsers = users.filter(u => (u.subscription && u.subscription.status === 'active')).length;
+        const activePaid = users.filter(u => (u.subscription && u.subscription.status === 'active' && (u.subscription.packageId || 'free') !== 'free')).length;
+        const activeFree = users.filter(u => (u.subscription && u.subscription.status === 'active' && (u.subscription.packageId || 'free') === 'free')).length;
+        const inactive = users.filter(u => (u.subscription && (u.subscription.status === 'inactive'))).length;
+        const expired = users.filter(u => (u.subscription && (u.subscription.status === 'expired'))).length;
+
+        console.groupCollapsed('Dashboard User Breakdown');
+        console.log('totalUsers (all docs):', totalUsers);
+        console.log('nonAdminUsers:', nonAdminUsers);
+        console.log('activeUsers (any package):', activeUsers);
+        console.log('activePaidUsers (exclude free):', activePaid);
+        console.log('activeFreeUsers:', activeFree);
+        console.log('inactiveUsers:', inactive);
+        console.log('expiredUsers:', expired);
+        console.log('packageDistribution (active count per package):', counts);
+        console.log('Note: `totalMembers` shown on dashboard = all non-admin users.');
+        console.groupEnd();
+      } catch (e) {
+        console.warn('Error computing user breakdown', e);
+      }
+
       // ดึงราคาจาก collection packages เพื่อคำนวณรายได้ = จำนวนคน active * price
       const packagesSnap = await getDocs(collection(db, 'packages'));
       const priceMap = {};
@@ -124,15 +152,37 @@ class Dashboard {
         priceMap[pid] = pd.price || 0;
       });
 
+      // Always calculate revenue from fresh data for accuracy
       const revenueRaw = {
         free: (priceMap.free || 0) * counts.free,
         monthly: (priceMap.monthly || 0) * counts.monthly,
         yearly: (priceMap.yearly || 0) * counts.yearly
       };
+      this.data.totalRevenue = revenueRaw.monthly + revenueRaw.yearly + revenueRaw.free;
 
-      // Update totalRevenue if dailySummary didn't include it (fallback)
-      if (!this.data.totalRevenue || this.data.totalRevenue === 0) {
-        this.data.totalRevenue = revenueRaw.monthly + revenueRaw.yearly + revenueRaw.free;
+      // Defensive: ensure totalRevenue is numeric
+      const numericTotal = Number(this.data.totalRevenue);
+      if (!isFinite(numericTotal) || isNaN(numericTotal)) {
+        console.warn('Dashboard debug: totalRevenue was invalid, resetting to 0', this.data.totalRevenue);
+        this.data.totalRevenue = 0;
+      } else {
+        this.data.totalRevenue = numericTotal;
+      }
+
+      // Debug logging: output computed values to help diagnose NaN / unexpected rates
+      try {
+        console.groupCollapsed('Dashboard Debug');
+        console.log('usersTotal', users.length);
+        console.log('members (non-admin)', memberListItems.length);
+        console.log('packageDistribution', counts);
+        console.log('priceMap', priceMap);
+        console.log('revenueRaw', revenueRaw);
+        console.log('totalRevenue(final)', this.data.totalRevenue);
+        console.log('dailySummary (fetched)', dailySummarySnap && dailySummarySnap.exists ? dailySummarySnap.data() : null);
+        console.log('monthlyRevenue array (length)', this.data.monthlyRevenue ? this.data.monthlyRevenue.length : 0, this.data.monthlyRevenue);
+        console.groupEnd();
+      } catch (e) {
+        console.log('Dashboard debug log error', e);
       }
 
       // Format revenueByPackage for bar chart display (uses monthly & yearly)
