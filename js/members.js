@@ -10,7 +10,8 @@ import {
   query,
   orderBy,
   getDoc,
-  addDoc
+  addDoc,
+  limit
 } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 import { where } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 import Modal from '../components/Modal.js';
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load members from Firestore
 async function loadMembers() {
   try {
-    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(10));
     const snapshot = await getDocs(q);
     // Filter out users with role === 'admin' and map to members array
     members = snapshot.docs

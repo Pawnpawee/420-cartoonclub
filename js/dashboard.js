@@ -9,7 +9,11 @@ import {
   doc, 
   getDoc,
   collection,
-  getDocs
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  where
 } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 
 class Dashboard {
@@ -37,7 +41,8 @@ class Dashboard {
   async init() {
     // show loader while loading dashboard data
     this._createLoader();
-    await this.loadDashboardData();
+    // Use the new lightweight loader that reads a single summary document
+    await this.loadSummaryData();
     this._hideLoader();
     this.attachEventListeners();
     this.initCharts();
@@ -76,130 +81,103 @@ class Dashboard {
    */
   async loadDashboardData() {
     try {
-      // โหลด daily summary (ถ้ามี)
-      const dailySummaryRef = doc(db, 'reports', 'daily_summary');
-      const dailySummarySnap = await getDoc(dailySummaryRef);
+      // Load all data from a single summary document.
+      const summaryRef = doc(db, 'reports', 'main_summary');
+      const summarySnap = await getDoc(summaryRef);
 
-      if (dailySummarySnap.exists()) {
-        const data = dailySummarySnap.data();
+      if (summarySnap.exists()) {
+        const data = summarySnap.data();
         this.data.totalRevenue = data.totalRevenue || 0;
         this.data.newMembers = data.newMembers || 0;
         this.data.churnRate = data.churnRate || 0;
         this.data.totalMembers = data.totalMembers || 0;
-      }
+        this.data.packageDistribution = data.packageDistribution || { free: 0, monthly: 0, yearly: 0 };
+        this.data.monthlyRevenue = data.monthlyRevenue || Array(12).fill(0);
+        
+        // Use revenueByPackage from the summary for the bar chart
+        const revenueByPackage = data.revenueByPackage || { monthly: 0, yearly: 0 };
+        this.data.revenueByPackage = this.formatRevenueByPackage(revenueByPackage);
 
-      // ดึง users ทั้งหมด (ยกเว้น admin)
-      const usersSnap = await getDocs(collection(db, 'users'));
-      const users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      // คำนวณจำนวนสมาชิก per package (active)
-      const counts = { free: 0, monthly: 0, yearly: 0 };
-      const memberListItems = [];
-
-      users.forEach(u => {
-        const role = (u.role || '').toString().toLowerCase();
-        if (role === 'admin') return; // skip admins
-
-        // collect for member list (display name)
-        const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || u.uid || u.id;
-        memberListItems.push({ id: u.id, name });
-
-        const pkg = (u.subscription && u.subscription.packageId) ? u.subscription.packageId : 'free';
-        const status = u.subscription && u.subscription.status ? u.subscription.status : 'inactive';
-        if (status === 'active') {
-          if (pkg === 'monthly') counts.monthly++;
-          else if (pkg === 'yearly') counts.yearly++;
-          else counts.free++;
-        }
-      });
-
-      this.data.packageDistribution = counts;
-
-      // Overwrite totalMembers with the fresh count of all non-admin users for consistency
-      this.data.totalMembers = memberListItems.length;
-
-      // Additional diagnostics: breakdown of user statuses
-      try {
-        const totalUsers = users.length;
-        const nonAdminUsers = users.filter(u => ((u.role||'').toString().toLowerCase() !== 'admin')).length;
-        const activeUsers = users.filter(u => (u.subscription && u.subscription.status === 'active')).length;
-        const activePaid = users.filter(u => (u.subscription && u.subscription.status === 'active' && (u.subscription.packageId || 'free') !== 'free')).length;
-        const activeFree = users.filter(u => (u.subscription && u.subscription.status === 'active' && (u.subscription.packageId || 'free') === 'free')).length;
-        const inactive = users.filter(u => (u.subscription && (u.subscription.status === 'inactive'))).length;
-        const expired = users.filter(u => (u.subscription && (u.subscription.status === 'expired'))).length;
-
-        console.groupCollapsed('Dashboard User Breakdown');
-        console.log('totalUsers (all docs):', totalUsers);
-        console.log('nonAdminUsers:', nonAdminUsers);
-        console.log('activeUsers (any package):', activeUsers);
-        console.log('activePaidUsers (exclude free):', activePaid);
-        console.log('activeFreeUsers:', activeFree);
-        console.log('inactiveUsers:', inactive);
-        console.log('expiredUsers:', expired);
-        console.log('packageDistribution (active count per package):', counts);
-        console.log('Note: `totalMembers` shown on dashboard = all non-admin users.');
+        console.groupCollapsed('Dashboard Data from Summary');
+        console.log('Summary Document:', data);
+        console.log('Total Revenue:', this.data.totalRevenue);
+        console.log('New Members:', this.data.newMembers);
+        console.log('Total Members:', this.data.totalMembers);
+        console.log('Package Distribution:', this.data.packageDistribution);
+        console.log('Monthly Revenue (for chart):', this.data.monthlyRevenue);
+        console.log('Revenue by Package (for chart):', revenueByPackage);
         console.groupEnd();
-      } catch (e) {
-        console.warn('Error computing user breakdown', e);
-      }
 
-      // ดึงราคาจาก collection packages เพื่อคำนวณรายได้ = จำนวนคน active * price
-      const packagesSnap = await getDocs(collection(db, 'packages'));
-      const priceMap = {};
-      packagesSnap.forEach(p => {
-        const pid = p.id; // expected ids: free, monthly, yearly
-        const pd = p.data();
-        priceMap[pid] = pd.price || 0;
-      });
-
-      // Always calculate revenue from fresh data for accuracy
-      const revenueRaw = {
-        free: (priceMap.free || 0) * counts.free,
-        monthly: (priceMap.monthly || 0) * counts.monthly,
-        yearly: (priceMap.yearly || 0) * counts.yearly
-      };
-      this.data.totalRevenue = revenueRaw.monthly + revenueRaw.yearly + revenueRaw.free;
-
-      // Defensive: ensure totalRevenue is numeric
-      const numericTotal = Number(this.data.totalRevenue);
-      if (!isFinite(numericTotal) || isNaN(numericTotal)) {
-        console.warn('Dashboard debug: totalRevenue was invalid, resetting to 0', this.data.totalRevenue);
-        this.data.totalRevenue = 0;
       } else {
-        this.data.totalRevenue = numericTotal;
+        console.warn('`reports/main_summary` document not found. Displaying zeros.');
+        // Set default zero values if summary doc doesn't exist
+        this.data.totalRevenue = 0;
+        this.data.newMembers = 0;
+        this.data.churnRate = 0;
+        this.data.totalMembers = 0;
+        this.data.packageDistribution = { free: 0, monthly: 0, yearly: 0 };
+        this.data.monthlyRevenue = Array(12).fill(0);
+        this.data.revenueByPackage = this.formatRevenueByPackage({ monthly: 0, yearly: 0 });
+        this.showError('ไม่พบข้อมูลสรุป (summary document)');
       }
 
-      // Debug logging: output computed values to help diagnose NaN / unexpected rates
-      try {
-        console.groupCollapsed('Dashboard Debug');
-        console.log('usersTotal', users.length);
-        console.log('members (non-admin)', memberListItems.length);
-        console.log('packageDistribution', counts);
-        console.log('priceMap', priceMap);
-        console.log('revenueRaw', revenueRaw);
-        console.log('totalRevenue(final)', this.data.totalRevenue);
-        console.log('dailySummary (fetched)', dailySummarySnap && dailySummarySnap.exists ? dailySummarySnap.data() : null);
-        console.log('monthlyRevenue array (length)', this.data.monthlyRevenue ? this.data.monthlyRevenue.length : 0, this.data.monthlyRevenue);
-        console.groupEnd();
-      } catch (e) {
-        console.log('Dashboard debug log error', e);
-      }
-
-      // Format revenueByPackage for bar chart display (uses monthly & yearly)
-      this.data.revenueByPackage = this.formatRevenueByPackage({ monthly: revenueRaw.monthly, yearly: revenueRaw.yearly });
-
-      // Store raw counts for other uses
-      this.data._rawRevenue = revenueRaw;
-      this.data._memberList = memberListItems;
-
-      // Update UI: members list and stat cards
+      // Update UI stat cards
       this.updateStatCards();
-      this.renderMemberList();
+      
+      // The member list can no longer be rendered this way, so we remove the call.
+      // this.renderMemberList(); 
 
-      console.log('✅ Dashboard data loaded', { counts, revenueRaw, members: memberListItems.length });
+      console.log('✅ Dashboard data loaded from summary document.');
     } catch (error) {
       console.error('❌ Error loading dashboard data:', error);
       this.showError('ไม่สามารถโหลดข้อมูล Dashboard ได้');
+    }
+  }
+
+  /**
+   * Lightweight loader that reads the single summary document `reports/main_summary`.
+   * This is the recommended path for production: one read to fetch precomputed metrics.
+   */
+  async loadSummaryData() {
+    try {
+      const summaryRef = doc(db, 'reports', 'main_summary');
+      const summarySnap = await getDoc(summaryRef);
+
+      if (summarySnap.exists()) {
+        const data = summarySnap.data();
+        this.data.totalRevenue = data.totalRevenue || 0;
+        this.data.newMembers = data.newMembers || 0;
+        this.data.churnRate = data.churnRate || 0;
+        this.data.totalMembers = data.totalMembers || 0;
+        this.data.packageDistribution = data.packageDistribution || { free: 0, monthly: 0, yearly: 0 };
+        this.data.monthlyRevenue = data.monthlyRevenue || Array(12).fill(0);
+        const revenueByPackage = data.revenueByPackage || { monthly: 0, yearly: 0 };
+        this.data.revenueByPackage = this.formatRevenueByPackage(revenueByPackage);
+      } else {
+        console.warn('reports/main_summary not found; falling back to zeros');
+      }
+
+      // Fetch total members count directly to ensure accuracy
+      const usersQueryForCount = query(collection(db, 'users'), where('role', '!=', 'admin'));
+      const usersSnapForCount = await getDocs(usersQueryForCount);
+      this.data.totalMembers = usersSnapForCount.size;
+
+      // Fetch recent members
+      const usersQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5));
+      const usersSnap = await getDocs(usersQuery);
+      this.data._memberList = usersSnap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email || 'Unknown'
+        };
+      });
+
+      this.updateStatCards();
+      this.renderMemberList(); // Render the member list
+    } catch (err) {
+      console.error('Failed to load summary document', err);
+      this.showError('ไม่สามารถโหลดข้อมูลสรุปได้');
     }
   }
 
@@ -538,13 +516,18 @@ class Dashboard {
     const container = document.getElementById('memberList');
     if (!container) return;
 
-    const members = (this.data._memberList || []).slice(0, 5);
+    const members = (this.data._memberList || []);
+    if (members.length === 0) {
+      container.innerHTML = '<div class="member-item" style="justify-content: center; color: #888;">ไม่มีข้อมูลสมาชิก</div>';
+      return;
+    }
     container.innerHTML = members.map(m => {
-      const initials = m.name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+      const name = m.name || 'Unnamed';
+      const initials = name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
       return `
         <div class="member-item">
           <div class="member-avatar">${initials}</div>
-          <div class="member-name">${m.name}</div>
+          <div class="member-name">${name}</div>
         </div>
       `;
     }).join('');

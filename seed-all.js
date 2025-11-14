@@ -8,6 +8,7 @@ import {
   getFirestore,
   writeBatch,
   doc,
+  setDoc,
   Timestamp
 } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 
@@ -58,6 +59,117 @@ async function seedContentWeekly(){
     }
   }
   if(opCount>0) await batch.commit();
+}
+
+/**
+ * Calculate a mock summary from seeded data and save it to `reports/main_summary`.
+ * This is intended for local seeding/testing so the frontend can read one document.
+ */
+async function calculateMockSummary(){
+  const { collection, collectionGroup, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js');
+  console.log('Calculating mock summary from seeded data...');
+
+  // load users and content
+  const usersSnap = await getDocs(collection(db, 'users'));
+  const users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const members = users.filter(u => (u.role || '').toLowerCase() !== 'admin');
+
+  const contentSnap = await getDocs(collection(db, 'content'));
+  const allContent = contentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // load all succeeded payments via collectionGroup
+  let payments = [];
+  try{
+    const paymentsSnap = await getDocs(query(collectionGroup(db, 'payments'), where('status','==','succeeded')));
+    payments = paymentsSnap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
+  }catch(e){
+    console.warn('collectionGroup payments failed, falling back to per-user scan', e);
+    // fallback: collect payments by iterating users (best-effort)
+    for(const u of users){
+      try{
+        const userPaymentsSnap = await getDocs(collection(db, 'users', u.id, 'payments'));
+        userPaymentsSnap.forEach(p => { if((p.data().status||'')==='succeeded') payments.push({ id:p.id, ...p.data(), ref: p.ref }); });
+      }catch(err){/* ignore per-user */}
+    }
+  }
+
+  // total revenue
+  const totalRevenue = payments.reduce((s,p) => s + Number(p.amount || 0), 0);
+
+  // new members in last 30 days
+  const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000);
+  const newMembers = members.filter(u => {
+    if(!u.createdAt) return false;
+    const d = u.createdAt.toDate ? u.createdAt.toDate() : new Date(u.createdAt);
+    return d >= thirtyDaysAgo;
+  }).length;
+
+  // package distribution (active users)
+  const packageDistribution = { free:0, monthly:0, yearly:0 };
+  members.forEach(u => {
+    if(u.subscription && u.subscription.status === 'active'){
+      const pid = u.subscription.packageId || 'free';
+      if(packageDistribution.hasOwnProperty(pid)) packageDistribution[pid]++;
+      else packageDistribution.free++;
+    }
+  });
+
+  // revenue by package (from payments.packageId if present)
+  const revenueByPackage = { free:0, monthly:0, yearly:0 };
+  payments.forEach(p => {
+    const pkg = p.packageId || 'free';
+    if(revenueByPackage.hasOwnProperty(pkg)) revenueByPackage[pkg] += Number(p.amount || 0);
+    else revenueByPackage.free += Number(p.amount || 0);
+  });
+
+  // top10 content by totalWatchMinutes
+  const top10Content = allContent.sort((a,b)=> (b.totalWatchMinutes||0)-(a.totalWatchMinutes||0)).slice(0,10).map(c=>({ contentId: c.id, title: c.title||'Unknown', watchMinutes: c.totalWatchMinutes||0, followerCount: c.followerCount||0 }));
+
+  // top10 weekly: approximate by using top10Content (mock)
+  const top10Weekly = top10Content.map(c => ({ ...c, watchMinutes: Math.floor(c.watchMinutes * 0.5) }));
+
+  // monthly trends (12 months): aggregate payments by month
+  const now = new Date();
+  const monthlyRevenue = [];
+  for(let i=11;i>=0;i--){
+    const monthStart = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth()+1, 1);
+    const monthRevenue = payments.reduce((s,p)=>{
+      const pd = p.date && p.date.toDate ? p.date.toDate() : (p.date ? new Date(p.date) : null);
+      if(pd && pd >= monthStart && pd < monthEnd) return s + Number(p.amount||0);
+      return s;
+    },0);
+    monthlyRevenue.push(monthRevenue);
+  }
+
+  const monthlyTrends = monthlyRevenue.map((rev, idx) => ({
+    year: new Date(now.getFullYear(), now.getMonth()-11+idx,1).getFullYear(),
+    month: new Date(now.getFullYear(), now.getMonth()-11+idx,1).getMonth()+1,
+    revenue: rev
+  }));
+
+  const mainSummary = {
+    totalRevenue,
+    newMembers,
+    churnRate: 0,
+    renewalRate: 0,
+    totalMembers: members.filter(u=>u.subscription && u.subscription.status==='active').length,
+    packageDistribution,
+    revenueByPackage,
+    top10Content,
+    top10Weekly,
+    monthlyRevenue,
+    monthlyTrends,
+    lastUpdated: Timestamp.now()
+  };
+
+  try{
+    await setDoc(doc(db, 'reports', 'main_summary'), mainSummary);
+    console.log('Mock main_summary written to Firestore');
+  }catch(e){
+    console.error('Failed to write mock main_summary', e);
+    throw e;
+  }
 }
 
 export async function seedUsersAndPayments(options = {}){
@@ -230,6 +342,12 @@ export async function seedAll(){
     await seedContentWeekly();
     console.log('Seeded weekly content summaries');
   }catch(e){ console.warn('seedContentWeekly failed:', e); }
+
+  // Calculate and write a mock main_summary so frontend can read a single document
+  try{
+    await calculateMockSummary();
+    console.log('Calculated and wrote mock main_summary');
+  }catch(e){ console.warn('calculateMockSummary failed:', e); }
 
   console.log('Full seeding finished');
   return 'done';

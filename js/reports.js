@@ -38,27 +38,28 @@ class Reports {
    */
   async loadReportsData() {
     try {
-      // โหลดข้อมูลสรุปรายวัน
-      const dailySummaryRef = doc(db, 'reports', 'daily_summary');
-      const dailySummarySnap = await getDoc(dailySummaryRef);
+      // Load all data from the single main_summary document
+      const summaryRef = doc(db, 'reports', 'main_summary');
+      const summarySnap = await getDoc(summaryRef);
       
-      if (dailySummarySnap.exists()) {
-        const data = dailySummarySnap.data();
+      if (summarySnap.exists()) {
+        const data = summarySnap.data();
         this.data.renewalRate = data.renewalRate || 0;
         this.data.churnRate = data.churnRate || 0;
         this.data.top10Weekly = data.top10Weekly || data.top10Content || [];
+        this.data.packageDistribution = data.packageDistribution || {};
+
+        // Get monthly trends directly from the summary document
+        this.data.monthlyTrends = data.monthlyTrends || [];
         
-        console.log('✅ Loaded daily summary:', data);
+        console.log('✅ Loaded data from main_summary:', data);
       } else {
-        console.warn('⚠️ Daily summary not found, using default values');
+        console.warn('⚠️ `reports/main_summary` not found, using default values');
+        this.showError('ไม่พบข้อมูลสรุป (main_summary document)');
       }
       
-      // โหลดข้อมูลรายเดือน (12 เดือนล่าสุด)
-      await this.loadMonthlyTrends();
-      
-      // อัปเดต UI
+      // Update UI with the loaded data
       this.updateRateCards();
-      // render mini sparklines and top10 weekly cards
       this.renderMiniGraphs();
       this.renderTop10Weekly();
       this.renderPackageProportions();
@@ -70,62 +71,13 @@ class Reports {
   }
 
   /**
+   * (This function is no longer needed as data is loaded from main_summary)
    * โหลดแนวโน้มรายเดือน
    */
   async loadMonthlyTrends() {
-    try {
-      const now = new Date();
-      const monthNames = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-      const trends = [];
-      
-      // ดึงข้อมูล 12 เดือนย้อนหลัง
-      for (let i = 11; i >= 0; i--) {
-        const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const year = monthDate.getFullYear();
-        const month = monthDate.getMonth() + 1;
-        const docId = `monthly_${year}_${String(month).padStart(2, '0')}`;
-        
-        try {
-          const monthlyRef = doc(db, 'reports', docId);
-          const monthlySnap = await getDoc(monthlyRef);
-          
-          if (monthlySnap.exists()) {
-            const data = monthlySnap.data();
-            trends.push({
-              month: monthNames[month - 1],
-              renewal: data.renewalRate || this.data.renewalRate || 85,
-              churn: data.churnRate || this.data.churnRate || 4.2,
-              revenue: data.revenue || 0,
-              newMembers: data.newMembers || 0
-            });
-          } else {
-            // ถ้าไม่มีข้อมูล ใช้ค่าเริ่มต้น
-            trends.push({
-              month: monthNames[month - 1],
-              renewal: this.data.renewalRate || 85,
-              churn: this.data.churnRate || 4.2,
-              revenue: 0,
-              newMembers: 0
-            });
-          }
-        } catch (error) {
-          console.warn(`⚠️ Could not load ${docId}:`, error);
-          trends.push({
-            month: monthNames[month - 1],
-            renewal: 85,
-            churn: 4.2,
-            revenue: 0,
-            newMembers: 0
-          });
-        }
-      }
-      
-      this.data.monthlyTrends = trends;
-      console.log('✅ Loaded monthly trends:', trends);
-      
-    } catch (error) {
-      console.error('❌ Error loading monthly trends:', error);
-    }
+    // This function is now obsolete. Monthly trends are part of main_summary.
+    // The logic has been moved into loadReportsData.
+    console.log('loadMonthlyTrends is deprecated.');
   }
 
   /**

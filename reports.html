@@ -253,31 +253,22 @@
         setTimeout(()=>{ if(overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 420);
       }
 
-      // start calculator and wait for event
-      import('./functions/calculate-reports.js').then(mod => {
-        const reportsCalculator = mod.default;
-        try {
-          reportsCalculator.start();
-        } catch(e) { console.warn('Could not start reportsCalculator:', e); }
-
-        // hide overlay when calculation finishes (success or failure)
-        const onDone = () => { hideOverlay(); window.removeEventListener('reportsCalculated', onDone); };
-        window.addEventListener('reportsCalculated', onDone);
-
-        // safety timeout: hide after 20s to avoid stuck UI
-        setTimeout(() => {
-          if (document.getElementById('reports-calc-loader')) {
-            console.warn('reportsCalculated event did not arrive in time — hiding loader');
-            hideOverlay();
-            window.removeEventListener('reportsCalculated', onDone);
-          }
-        }, 20000);
-      }).catch(err => {
-        console.error('Failed to import reportsCalculator:', err);
-        // hide overlay to allow UI to continue
-        setTimeout(()=>{ try{ if(document.getElementById('reports-calc-loader')) document.getElementById('reports-calc-loader').remove(); }catch(e){} }, 500);
-      });
+      // The client-side reports calculator has been removed to avoid quota issues.
+      // The page now reads precomputed data from `reports/main_summary` via `js/reports.js`.
+      // Simply hide the loader so the page can continue rendering.
+      hideOverlay();
     })();
   </script>
+  <script type="module">
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+      import { auth } from './firebase-controller.js';
+      import { checkAdmin } from './js/main.js';
+
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          checkAdmin(user.uid);
+        }
+      });
+    </script>
 </body>
 </html>

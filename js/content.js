@@ -2,7 +2,7 @@
 // Admin UI for managing content collection and episodes subcollection
 
 import { db, auth, getUserDoc } from '../firebase-controller.js';
-import { collection, query, orderBy, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+import { collection, query, orderBy, getDocs, addDoc, doc, setDoc, deleteDoc, getDoc, limit } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 import Modal from '../components/Modal.js';
 
@@ -77,7 +77,7 @@ if (contentTableBody) {
 async function loadPage(){
     try {
         const cRef = collection(db, 'content');
-        const snap = await getDocs(query(cRef, orderBy('title')));
+        const snap = await getDocs(query(cRef, orderBy('title'), limit(10)));
         contents = snap.docs.map(d => ({ id: d.id, data: d.data() }));
 
         // pagination setup

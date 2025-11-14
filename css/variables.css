@@ -356,7 +356,7 @@ body {
   padding: 26px 39px;
   display: flex;
   flex-direction: column;
-  gap: 23px;
+  gap: 10px;
   height: 146px;
 }
 
