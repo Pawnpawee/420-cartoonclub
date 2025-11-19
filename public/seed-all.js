@@ -2,6 +2,7 @@
 import { seedContentCollection } from './seed-databse.js';
 import { seedPackagesCollection } from './seed-packages.js';
 import { seedEpisodesCollection } from './seed-episodes.js';
+import { seedReportsDaily } from './seed-reports.js';
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js';
 import {
@@ -348,6 +349,12 @@ export async function seedAll(){
     await calculateMockSummary();
     console.log('Calculated and wrote mock main_summary');
   }catch(e){ console.warn('calculateMockSummary failed:', e); }
+
+  // Also write a daily_summary (used by reports page)
+  try{
+    await seedReportsDaily();
+    console.log('Calculated and wrote daily_summary');
+  }catch(e){ console.warn('seedReportsDaily failed:', e); }
 
   console.log('Full seeding finished');
   return 'done';

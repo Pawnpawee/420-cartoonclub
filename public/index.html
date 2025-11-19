@@ -1,89 +1,102 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="th">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.6.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.6.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.6.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<head>
+    <script>document.write('\n<div id="site-loader" aria-hidden="false" role="status" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:#fff5df;z-index:99999;transition:opacity .35s ease,visibility .35s;">\n  <img src="img/logo_cartoonclub.png" alt="Cartoon Club" style="width:140px;height:auto;margin-bottom:12px;"/>\n  <div style="display:flex;gap:10px;align-items:center;">\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:120ms;"></span>\n    <span style="width:12px;height:12px;border-radius:50%;background:#c1272d;opacity:.25;display:inline-block;animation:jump 900ms infinite ease-in-out;animation-delay:240ms;"></span>\n  </div>\n  <style>\n    @keyframes jump{0%,80%,100%{transform:translateY(0);opacity:.25}40%{transform:translateY(-10px);opacity:1}}\n    .site-loader-hidden{opacity:0;visibility:hidden;pointer-events:none}\n  </style>\n  <script>\n    (function(){\n      function hide(){var e=document.getElementById(\'site-loader\'); if(!e) return; e.classList.add(\'site-loader-hidden\'); setTimeout(function(){ if(e && e.parentNode) e.parentNode.removeChild(e); },450);}\n      window.hideSiteLoader = hide;\n      window.addEventListener(\'load\', function(){ setTimeout(hide, 150); });\n    })();\n  <\/script>\n</div>\n');</script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartoon Club - การ์ตูนใหม่ ๆ ทั้งอนิเมะและอนิเมชัน</title>
+    <link rel="icon" type="image/png" href="/img/logo_cartoonclub.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/global.css">
+</head>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+<body>
+    <!-- Navbar Component -->
+    <div id="navbar"></div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero/Cover Section -->
+        <section class="hero-section">
+            <!-- YouTube hero video: replace the VIDEO_ID in the iframe src below with your own YouTube video id if desired -->
+            <div class="hero-video">
+                <div class="video-wrapper">
+                    <!-- Hero video id: 9uCGO5Iy8a4 (updated) -->
+                    <iframe class="hero-iframe"
+                        src="https://www.youtube.com/embed/9uCGO5Iy8a4?autoplay=1&mute=1&controls=0&loop=1&playlist=9uCGO5Iy8a4&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
+                        title="Hero video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+            </div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+            <div class="hero-gradient"></div>
+
+            <div class="hero-text">
+                <p>การเดินทางสู่วาโนะ: กลุ่มหมวกฟางเดินทางมาถึงประเทศวาโนะ และต้องปลอมตัวเพื่อแทรกซึมเข้าไปในประเทศ</p>
+                <p>พันธมิตรนินจา-โจรสลัด-มิงค์-ซามูไร: กลุ่มหมวกฟางได้ร่วมมือกับเผ่ามิงค์ กลุ่มโจรสลัดของลอว์</p>
+                <p>อดีตซามูไรผู้ยิ่งใหญ่ของวาโนะที่เคยร่วมเดินทางกับกลุ่มโจรสลัดของหนวดขาวและราชาโจรสลัดโกลด์ ดี โรเจอร์
+                </p>
+                <p>การต่อสู้ครั้งใหญ่: การต่อสู้ครั้งนี้ได้รวมการต่อสู้ที่สำคัญหลายครั้ง เช่น ลูฟี่และโซโล vs. ไคโด,
+                    คิดและลอว์ vs. บิ๊กมัม</p>
+            </div>
+            <!-- Figma design reference: https://www.figma.com/design/OcvnmDKqWXtSDrsQiUAz0h/420-Final?node-id=1-1225&m=dev -->
+        </section>
+
+        <!-- Top 10 Comics Section -->
+        <section class="content-section top-10">
+            <h2 class="section-title">การ์ตูน 10 อันดับกำลังมาแรง</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="scrollCarousel('top10', -1)">‹</button>
+                <div class="carousel-top10 card-container horizontal-scroll" id="top10">
+                </div>
+                <button class="carousel-btn next" onclick="scrollCarousel('top10', 1)">›</button>
+            </div>
+        </section>
+
+        <!-- Recommended Comics Section -->
+        <section class="content-section recommended">
+            <h2 class="section-title">การ์ตูนแนะนำ</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="scrollCarousel('recommended', -1)">‹</button>
+                <div class="carousel" id="recommended">
+                </div>
+                <button class="carousel-btn next" onclick="scrollCarousel('recommended', 1)">›</button>
+            </div>
+        </section>
+
+        <section class="content-section series">
+            <h2 class="section-title">ซีรีส์</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="scrollCarousel('series', -1)">‹</button>
+                <div class="carousel" id="series">
+                </div>
+                <button class="carousel-btn next" onclick="scrollCarousel('series', 1)">›</button>
+            </div>
+        </section>
+
+        <!-- Movies Section -->
+        <section class="content-section movies">
+            <h2 class="section-title">ภาพยนตร์</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="scrollCarousel('movies', -1)">‹</button>
+                <div class="carousel" id="movies">
+                </div>
+                <button class="carousel-btn next" onclick="scrollCarousel('movies', 1)">›</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Component -->
+    <div id="footer"></div>
+
+    <!-- Lenis: smooth scroll lib (jsDelivr) -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.15/dist/lenis.min.js"></script>
+
+    <script type="module" src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+
 </html>

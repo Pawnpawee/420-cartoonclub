@@ -30,6 +30,11 @@ const videoConfig = {
   episodes: {}, // {1: 'youtubeId', 2: 'youtubeId2', ...}
 };
 
+// store per-episode titles: {1: 'Episode 1 title', 2: '...'}
+videoConfig.titles = {};
+// store content title for display
+videoConfig.contentTitle = "";
+
 let userIsActive = false;
 let adRequired = false;
 let ytApiReady = false;
@@ -448,16 +453,30 @@ function startProgressUpdate() {
 // Generate episode buttons dynamically based on videoConfig.totalEpisodes
 function generateEpisodeButtons() {
   const episodeGrid = document.getElementById("episodeGrid");
+  if (!episodeGrid) return;
+  // clear existing
+  episodeGrid.innerHTML = "";
+  // Use the explicit episodeNumbers list so non-sequential numbers work
+  const nums = Array.isArray(videoConfig.episodeNumbers)
+    ? videoConfig.episodeNumbers
+    : (function() {
+        const arr = [];
+        for (let i = 1; i <= videoConfig.totalEpisodes; i++) arr.push(i);
+        return arr;
+      })();
 
-  for (let i = 1; i <= videoConfig.totalEpisodes; i++) {
+  nums.forEach((i) => {
     const button = document.createElement("button");
     button.className = "episode-btn";
+    // show only the zero-padded number per request
     button.textContent = i.toString().padStart(2, "0");
     button.dataset.episode = i;
+    // attach video id for later use
+    button.dataset.videoId = videoConfig.episodes[i] || "";
     if (i === videoConfig.currentEpisode) button.classList.add("active");
     button.addEventListener("click", () => selectEpisode(i));
     episodeGrid.appendChild(button);
-  }
+  });
 }
 
 function selectEpisode(episodeNumber) {
@@ -471,11 +490,36 @@ function selectEpisode(episodeNumber) {
       btn.classList.add("active");
     else btn.classList.remove("active");
   });
-  if (isPlayerReady) {
-    const videoId = videoConfig.episodes[episodeNumber];
-    if (videoId) player.loadVideoById(videoId);
+
+  // Update displayed title to reflect the chosen episode
+  updateDisplayedTitle(episodeNumber);
+
+  // Load the mapped video_id into the player
+  const mappedVideoId = videoConfig.episodes[episodeNumber];
+  if (mappedVideoId) {
+    if (isPlayerReady && player && typeof player.loadVideoById === 'function') {
+      player.loadVideoById(mappedVideoId);
+    } else {
+      // if player isn't ready yet, create or update it when API is available
+      try {
+        createMainPlayer(mappedVideoId);
+      } catch (e) { console.warn('Could not create/load player for episode', e); }
+    }
   }
+
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Update the `.cartoon-title` to show content title + episode info
+function updateDisplayedTitle(episodeNumber) {
+  const titleEl = document.querySelector('.cartoon-title');
+  if (!titleEl) return;
+  const epTitle = (videoConfig.titles && videoConfig.titles[episodeNumber]) ? videoConfig.titles[episodeNumber] : "";
+  if (epTitle) {
+    titleEl.textContent = `${videoConfig.contentTitle} ${epTitle}`;
+  } else {
+    titleEl.textContent = `${videoConfig.contentTitle}`;
+  }
 }
 
 /**
@@ -537,8 +581,17 @@ function getWeekKey(d) {
 }
 
 function playNextEpisode() {
-  const nextEpisode = videoConfig.currentEpisode + 1;
-  if (nextEpisode <= videoConfig.totalEpisodes) selectEpisode(nextEpisode);
+  // Use episodeNumbers list to determine the next available episode
+  const nums = Array.isArray(videoConfig.episodeNumbers)
+    ? videoConfig.episodeNumbers
+    : (function() {
+        const arr = [];
+        for (let i = 1; i <= videoConfig.totalEpisodes; i++) arr.push(i);
+        return arr;
+      })();
+  const idx = nums.indexOf(videoConfig.currentEpisode);
+  const next = idx >= 0 ? nums[idx + 1] : nums[0];
+  if (next) selectEpisode(next);
   else showAlertModal("คุณได้ดูตอนสุดท้ายแล้ว");
 }
 
@@ -611,6 +664,8 @@ async function initializeFromContentParam() {
     if (titleEl) titleEl.textContent = content.title || "ไม่ระบุชื่อเรื่อง";
     // save current content id for follow/watch operations
     currentContentId = contentId;
+    // keep a copy for episode-specific display
+    videoConfig.contentTitle = content.title || "ไม่ระบุชื่อเรื่อง";
     // Recover leftover watch seconds from previous session (best-effort)
     try {
       const raw = localStorage.getItem('watch_leftover');
@@ -680,12 +735,40 @@ async function initializeFromContentParam() {
       epsSnap.docs.forEach((d) => {
         const ep = d.data();
         const num = Number(ep.episodeNumber) || Number(d.id) || null;
-        if (num) videoConfig.episodes[num] = ep.video_id;
+        if (num) {
+          // map the video id field and title field coming from your DB
+          videoConfig.episodes[num] = ep.video_id || ep.videoId || ep.video || "";
+          videoConfig.titles[num] = ep.title || ep.epTitle || "";
+        }
       });
     }
     const firstVideoId = Object.values(videoConfig.episodes)[0] || "";
-    for (let i = 1; i <= videoConfig.totalEpisodes; i++) {
-      if (!videoConfig.episodes[i]) videoConfig.episodes[i] = firstVideoId;
+    // Build a sorted list of episode numbers present in the DB
+    const epNums = Object.keys(videoConfig.episodes)
+      .map((k) => Number(k))
+      .filter((n) => !isNaN(n));
+    epNums.sort((a, b) => a - b);
+
+    // If there are no episodes discovered, fall back to 1..totalEpisodes
+    if (epNums.length === 0) {
+      // fallback: populate sequentially based on content.episodeCount
+      for (let i = 1; i <= (videoConfig.totalEpisodes || 1); i++) {
+        videoConfig.episodes[i] = videoConfig.episodes[i] || firstVideoId;
+        videoConfig.titles[i] = videoConfig.titles[i] || "";
+      }
+      videoConfig.episodeNumbers = Object.keys(videoConfig.episodes)
+        .map((k) => Number(k))
+        .filter((n) => !isNaN(n))
+        .sort((a, b) => a - b);
+    } else {
+      // ensure titles and video ids exist for the discovered keys; fill missing video ids with firstVideoId
+      epNums.forEach((num) => {
+        if (!videoConfig.episodes[num]) videoConfig.episodes[num] = firstVideoId;
+        if (!videoConfig.titles[num]) videoConfig.titles[num] = "";
+      });
+      videoConfig.episodeNumbers = epNums;
+      // Update totalEpisodes to reflect actual count discovered
+      videoConfig.totalEpisodes = videoConfig.episodeNumbers.length;
     }
     // ... (จบส่วนโค้ดเดิม) ...
 
@@ -715,6 +798,8 @@ async function initializeFromContentParam() {
     } else {
       loadYouTubeAPI(); // API ยังไม่มา, โหลด API (แล้ว onYouTubeIframeAPIReady จะสร้าง player เอง)
     }
+    // Update displayed title to reflect current episode (if any)
+    try { updateDisplayedTitle(videoConfig.currentEpisode); } catch (e) {}
   } catch (err) {
     console.error("Error initializing content page:", err);
   }

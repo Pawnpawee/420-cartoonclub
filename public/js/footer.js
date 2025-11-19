@@ -25,7 +25,14 @@ function renderFooter(targetId) {
                 </div>
             </div>
             <div class="footer-divider"></div>
-            <p class="footer-copyright">Copyright © 2025 Cartoon Club.</p>
+            <p class="footer-copyright">Copyright © 2025 Cartoon Club. นี่เป็นเว็บไซต์สำหรับใช้ในวิชา CMM 420 เท่านั้น ไม่ใช่เว็บไซต์จริง
+            
+            
+            
+            
+            
+            
+            </p>
         </footer>
     `;
     document.getElementById(targetId).innerHTML = footerHTML;

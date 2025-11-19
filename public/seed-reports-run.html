@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Seed reports (run)</title>
+    <style>
+      body{font-family:Inter,Segoe UI,Arial;margin:22px;background:#f7fafc;color:#0f172a}
+      .card{background:#fff;padding:18px;border-radius:8px;max-width:880px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+      button{background:#2563eb;color:white;border:none;padding:10px 14px;border-radius:6px;font-size:15px;cursor:pointer}
+      pre{background:#0f172a;color:#e6eef8;padding:12px;border-radius:6px;max-height:240px;overflow:auto}
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Seed reports — Run</h2>
+      <p>Click <strong>Run</strong> to write a mock <code>reports/daily_summary</code> document to Firestore (for local testing).</p>
+      <p>
+        <button id="runBtn">Run seedReportsDaily()</button>
+        <span style="margin-left:12px;color:#6b7280">Open browser console for Firebase logs.</span>
+      </p>
+      <h4>Output</h4>
+      <pre id="log">Ready.
+</pre>
+      <p style="margin-top:12px;color:#6b7280">Tip: Serve this folder over HTTP (e.g. <code>python -m http.server</code>) then open this page.</p>
+    </div>
+
+    <script type="module">
+      import { seedReportsDaily } from './seed-reports.js';
+
+      const btn = document.getElementById('runBtn');
+      const logEl = document.getElementById('log');
+
+      function log(msg){
+        const ts = new Date().toLocaleTimeString();
+        logEl.textContent += `[${ts}] ${msg}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      btn.addEventListener('click', async () => {
+        btn.disabled = true; btn.textContent = 'Running...';
+        log('Invoking seedReportsDaily()');
+        try{
+          const res = await seedReportsDaily();
+          log('Success: ' + (res || 'done'));
+        }catch(e){
+          console.error(e);
+          log('Error: ' + (e && e.message ? e.message : String(e)));
+        }finally{
+          btn.disabled = false; btn.textContent = 'Run seedReportsDaily()';
+        }
+      });
+    </script>
+  </body>
+</html>
